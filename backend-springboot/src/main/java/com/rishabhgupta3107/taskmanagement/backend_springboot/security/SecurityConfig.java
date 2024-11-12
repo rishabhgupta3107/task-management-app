@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -44,8 +45,10 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http.csrf(AbstractHttpConfigurer::disable)
-        .authorizeRequests(
+    http.csrf(AbstractHttpConfigurer::disable);
+    http.cors(AbstractHttpConfigurer::disable);
+
+    http.authorizeHttpRequests(
             authorize ->
                 authorize
                     .requestMatchers("/api/auth/**", "/h2-console/**", "/actuator/**")
@@ -55,9 +58,8 @@ public class SecurityConfig {
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-    http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
+    http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
     http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-
     return http.build();
   }
 }
