@@ -1,6 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
+import { Observable } from "rxjs";
 
 @Injectable({
     providedIn: 'root'
@@ -10,7 +11,7 @@ import { Router } from "@angular/router";
   
     constructor(private http: HttpClient, private router: Router) {}
   
-    login(username: string, password: string) {
+    login(username: string, password: string): Observable<{ token: string }> {
       return this.http.post<{ token: string }>(`${this.baseUrl}/login`, { username, password });
     }
   
@@ -21,5 +22,9 @@ import { Router } from "@angular/router";
   
     isLoggedIn() {
       return !!localStorage.getItem('token');
+    }
+
+    getToken(): string | null {
+      return localStorage.getItem('token');
     }
   }

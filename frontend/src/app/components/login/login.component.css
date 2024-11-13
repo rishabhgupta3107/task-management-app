@@ -1,0 +1,29 @@
+.login-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url('assets/background.jpg');
+    background-size: cover;
+  }
+  
+  mat-card {
+    width: 400px;
+  }
+  
+  .mat-card-title {
+    text-align: center;
+  }
+  
+  .social-links {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+  }
+  
+  .social-icon {
+    width: 30px;
+    height: 30px;
+    margin: 0 10px;
+  }
+    

@@ -1,0 +1,6 @@
+<h2 mat-dialog-title>Submit Details?</h2>
+<mat-dialog-content>{{ data.message }}</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Back</button>
+  <button mat-raised-button color="primary" [mat-dialog-close]="true">Submit</button>
+</mat-dialog-actions>

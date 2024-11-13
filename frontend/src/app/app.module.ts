@@ -24,7 +24,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
-
+import { LogoutComponent } from "./components/logout/logout.component";
+import { ConfirmationDialogComponent } from "./components/confirmation-dialog/confirmation-dialog.component";
+import { MatDialogModule } from "@angular/material/dialog";
 
 export function jwtTokenGetter() {
     return localStorage.getItem('token');
@@ -35,7 +37,9 @@ export function jwtTokenGetter() {
         AppComponent,
         TaskListComponent,
         TaskDetailComponent,
-        LoginComponent
+        LoginComponent,
+        LogoutComponent,
+        ConfirmationDialogComponent
     ],
     imports: [
         BrowserModule,
@@ -53,6 +57,7 @@ export function jwtTokenGetter() {
         MatDatepickerModule,
         MatNativeDateModule,
         MatIconModule,
+        MatDialogModule,
         JwtModule.forRoot({
             config: {
                 tokenGetter: jwtTokenGetter,
