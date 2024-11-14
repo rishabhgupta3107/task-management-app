@@ -64,6 +64,7 @@
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>runtime</scope>
+			<version>2.2.224</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
