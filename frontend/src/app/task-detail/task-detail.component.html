@@ -1,0 +1,54 @@
+<mat-card class="task-card">
+    <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+      <mat-card-content class="task-card-content">
+  
+        <!-- Title Field -->
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-label>Title</mat-label>
+          <input matInput formControlName="title" placeholder="Enter task title">
+          <mat-error *ngIf="taskForm.controls['title']?.hasError('required')">Title is required.</mat-error>
+          <mat-error *ngIf="taskForm.controls['title']?.hasError('maxlength')">Title cannot exceed 100 characters.</mat-error>
+        </mat-form-field>
+  
+        <!-- Description Field -->
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-label>Description</mat-label>
+          <textarea matInput formControlName="description" placeholder="Enter task description"></textarea>
+          <mat-error *ngIf="taskForm.controls['description']?.hasError('required')">Description is required.</mat-error>
+          <mat-error *ngIf="taskForm.controls['description']?.hasError('maxlength')">Description cannot exceed 1000 characters.</mat-error>
+        </mat-form-field>
+  
+        <!-- Status Field -->
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="status" placeholder="Select status">
+            <mat-option *ngFor="let status of statuses" [value]="status">{{ status }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+  
+        <!-- Priority Field -->
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-label>Priority</mat-label>
+          <mat-select formControlName="priority" placeholder="Select priority">
+            <mat-option *ngFor="let priority of priorities" [value]="priority">{{ priority }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+  
+        <!-- Due Date Field -->
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-label>Due Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="dueDate" placeholder="Pick a due date">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+  
+      </mat-card-content>
+  
+      <!-- Action Buttons -->
+      <mat-card-actions class="card-actions">
+        <button mat-raised-button color="primary" type="submit">Save</button>
+        <button mat-raised-button color="warn" routerLink="/tasks">Cancel</button>
+      </mat-card-actions>
+    </form>
+  </mat-card>
+  

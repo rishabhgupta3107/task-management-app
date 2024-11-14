@@ -1,17 +1,17 @@
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from "@angular/common/http";
-import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
-import { AuthService } from "../auth.service";
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { AuthService } from '../auth.service';
 
 @Injectable({
-    providedIn: 'root'
-  })
-  export class TokenInterceptorService implements HttpInterceptor {
+  providedIn: 'root'
+})
+export class TokenInterceptorService implements HttpInterceptor{
 
-    constructor(private authService: AuthService) {}
-  
-    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-      const token = this.authService.getToken();
+  constructor(private authService: AuthService) { }
+
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    const token = this.authService.getToken();
       if (token) {
         req = req.clone({
           setHeaders: {
@@ -20,5 +20,5 @@ import { AuthService } from "../auth.service";
         });
       }
       return next.handle(req);
-    }
   }
+}

@@ -1,0 +1,35 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-icon">
+      <img src="assets/user-icon.png" alt="User Icon" class="user-icon">
+      <h2 class="login-title">Login</h2>
+    </div>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <!-- Username Field -->
+      <div class="input-group">
+        <input type="text" placeholder="Username" formControlName="username" required>
+        <mat-error *ngIf="loginForm.controls['username']?.hasError('required') && loginForm.controls['username']?.touched">Username is required.</mat-error>
+      </div>
+
+      <!-- Password Field -->
+      <div class="input-group">
+        <input type="password" placeholder="Password" formControlName="password" required>
+        <mat-error *ngIf="loginForm.controls['password']?.hasError('required') && loginForm.controls['password']?.touched">Password is required.</mat-error>
+        <mat-error *ngIf="errorMessage">{{errorMessage}}</mat-error>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="login-button">Login</button>
+
+      <!-- Social Links -->
+      <div class="social-links">
+        <a href="https://www.linkedin.com/in/rishabhgupta3107/" target="_blank">
+          <img src="assets/linkedin.png" alt="LinkedIn" class="social-icon">
+        </a>
+        <a href="https://www.instagram.com/rishabh_gupta_/" target="_blank">
+          <img src="assets/instagram.png" alt="Instagram" class="social-icon">
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,64 @@
+/* Styling for the dialog title */
+.dialog-title {
+    font-size: 1.5em;
+    color: #333;
+    font-weight: 600;
+    margin: 0;
+    padding: 10px 0;
+    text-align: center;
+    background-color: #f7f7f7;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  /* Styling for the dialog content */
+  .dialog-content {
+    font-size: 1em;
+    color: #555;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  /* Styling for the action buttons container */
+  .dialog-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background-color: #f7f7f7;
+    border-top: 1px solid #ccc;
+  }
+  
+  /* Common button styling */
+  .dialog-button {
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .dialog-button:hover {
+    background-color: #f1f1f1;
+  }
+  
+  /* Styling for the "Submit" button */
+  .submit-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+  }
+  
+  .submit-button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Styling for the "Back" button */
+  .dialog-button:not(.submit-button) {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  .dialog-button:not(.submit-button):hover {
+    background-color: #d32f2f;
+  }
+  

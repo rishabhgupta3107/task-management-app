@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { TaskService } from '../../services/task.service';
-import { AuthService } from '../../auth.service';
-import { Task } from '../../models/task.model';
+import { AuthService } from '../auth.service';
+import { TaskService } from '../services/task.service';
+import { Task } from '../task';
 
 @Component({
   selector: 'app-task-list',
   templateUrl: './task-list.component.html',
-  styleUrls: ['./task-list.component.css']
+  styleUrl: './task-list.component.css'
 })
 export class TaskListComponent implements OnInit {
+
   tasks: Task[] = [];
   displayedColumns: string[] = ['title', 'description', 'status', 'actions'];
 
@@ -35,4 +36,5 @@ export class TaskListComponent implements OnInit {
   logout() {
     this.authService.logout();
   }
+
 }
