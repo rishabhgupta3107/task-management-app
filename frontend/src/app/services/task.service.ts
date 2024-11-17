@@ -9,7 +9,7 @@ import { AuthService } from '../auth.service';
 })
 export class TaskService {
 
-  private baseUrl = 'http://localhost:8080/api/tasks';
+  public baseUrl = 'http://localhost:8080/api/tasks';
 
   constructor(private http: HttpClient) { }
 
