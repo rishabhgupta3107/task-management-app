@@ -37,7 +37,7 @@ export class TaskListComponent implements OnInit {
   }
 
   applyFilter(filterValue: any): void {
-    this.filteredTasks.filter = filterValue.trim().toLowerCase();
+    this.filteredTasks.filter = filterValue.value.trim().toLowerCase();
   }
 
   loadTasks() {
@@ -79,8 +79,8 @@ export class TaskListComponent implements OnInit {
   }
 
   
-  viewTaskDetails(id: number) {
-    this.router.navigate([`/tasks/${id}`]);
+  viewTaskDetails(id: any) {
+    this.router.navigate([`/tasks/${id.id}`]);
   }
 
   openTaskCreateDialog() {

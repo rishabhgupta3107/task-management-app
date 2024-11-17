@@ -36,13 +36,32 @@ export class TaskDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
-      this.taskId = Number(params.get('id'));
-      if (this.taskId) {
-        this.taskService.getTaskById(this.taskId).subscribe(task => {
-          this.taskForm.patchValue(task);
-        });
+      const id = params.get('id');
+      if (id) {
+        this.taskId = +id;
+        this.fetchTaskDetails(this.taskId);
       }
     });
+  }
+
+  fetchTaskDetails(id: number): void {
+    this.taskService.getTaskById(id).subscribe(
+      task => {
+        if (task) {
+          // Patch the task details into the form
+          this.taskForm.patchValue({
+            id: task.id,
+            title: task.title,
+            description: task.description,
+            status: task.status,
+            dueDate: task.dueDate ? new Date(task.dueDate) : null,
+          });
+        }
+      },
+      error => {
+        console.error('Error fetching task details:', error);
+      }
+    );
   }
 
   dateValidator(control: AbstractControl): { [key: string]: any } | null {
