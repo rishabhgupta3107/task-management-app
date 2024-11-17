@@ -11,20 +11,10 @@ export class TaskService {
 
   private baseUrl = 'http://localhost:8080/api/tasks';
 
-  constructor(private http: HttpClient, private authService: AuthService) { }
-
-  private getHeaders(): HttpHeaders {
-    const token = this.authService.getToken();
-    if (!token) {
-      throw new Error('User is not authenticated');
-    }
-    return new HttpHeaders({
-      Authorization: `Bearer ${token}`
-    });
-  }
+  constructor(private http: HttpClient) { }
 
   getAllTasks(): Observable<Task[]> {
-    return this.http.get<Task[]>(this.baseUrl, { headers: this.getHeaders() });
+    return this.http.get<Task[]>(this.baseUrl);
   }
 
   getTaskById(id: number): Observable<Task> {

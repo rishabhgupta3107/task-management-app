@@ -26,12 +26,15 @@ export class LoginComponent {
   onSubmit() {
     const { username, password } = this.loginForm.value;
     this.authService.login(username, password).subscribe(
-      response => {
-        localStorage.setItem('token', response.token);
+      () => {
         this.router.navigate(['/tasks']);
       },
       error => {
-        this.errorMessage = 'Ex ka number yaad rehta hai tumhe, lekin tumhara password nahi';
+        if(error.status === 401) {
+          this.errorMessage = 'Ex ka number yaad rehta hai tumhe, lekin tumhara password nahi';
+        } else {
+          this.errorMessage = 'Something went wrong. Please try again later.';
+        }
       }
     );
   }

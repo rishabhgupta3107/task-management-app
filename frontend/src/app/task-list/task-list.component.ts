@@ -36,11 +36,6 @@ export class TaskListComponent implements OnInit {
     this.loadTasks();
   }
 
-  ngAfterViewInit() {
-    this.filteredTasks.paginator = this.paginator;
-    this.filteredTasks.sort = this.sort;
-  }
-
   applyFilter(filterValue: any): void {
     this.filteredTasks.filter = filterValue.trim().toLowerCase();
   }
