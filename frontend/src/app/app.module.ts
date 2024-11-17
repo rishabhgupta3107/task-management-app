@@ -21,6 +21,13 @@ import { JwtModule } from "@auth0/angular-jwt";
 import { AuthService } from './auth.service';
 import { TaskService } from './services/task.service';
 import { TokenInterceptorService } from './services/token-interceptor.service';
+import {MatInput} from "@angular/material/input";
+import {MatButton, MatIconButton} from "@angular/material/button";
+import {MatIcon} from "@angular/material/icon";
+import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
+import {MatPaginator} from "@angular/material/paginator";
+import { TaskCreateDialogComponent } from './task-create-dialog/task-create-dialog.component';
+import { MatMomentDateModule } from '@angular/material-moment-adapter';
 
 export function jwtTokenGetter() {
   return localStorage.getItem('token');
@@ -33,7 +40,8 @@ export function jwtTokenGetter() {
     LogoutComponent,
     ConfirmationDialogueComponent,
     TaskDetailComponent,
-    TaskListComponent
+    TaskListComponent,
+    TaskCreateDialogComponent
   ],
   imports: [
     HttpClientModule,
@@ -47,6 +55,7 @@ export function jwtTokenGetter() {
     MatDialogModule,
     MatSelectModule,
     MatDatepickerModule,
+    MatMomentDateModule,
     MatToolbarModule,
     MatTableModule,
     JwtModule.forRoot({
@@ -55,7 +64,15 @@ export function jwtTokenGetter() {
         allowedDomains: ['localhost:8080'],
         disallowedRoutes: []
       }
-    })
+    }),
+    MatInput,
+    MatButton,
+    MatIcon,
+    MatMenu,
+    MatMenuTrigger,
+    MatMenuItem,
+    MatIconButton,
+    MatPaginator
   ],
   providers: [ AuthService, TaskService, { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true } ],
   bootstrap: [AppComponent]

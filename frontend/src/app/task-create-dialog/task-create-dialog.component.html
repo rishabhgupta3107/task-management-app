@@ -1,0 +1,50 @@
+<h2 mat-dialog-title class="header">Create Task</h2>
+<mat-dialog-content class="content">
+  <form>
+    <!-- Title Field -->
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Title</mat-label>
+      <input matInput [(ngModel)]="task.title" placeholder="Enter task title" required />
+    </mat-form-field>
+
+    <!-- Description Field -->
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Description</mat-label>
+      <textarea matInput [(ngModel)]="task.description" placeholder="Enter task description" required></textarea>
+    </mat-form-field>
+
+    <!-- Status Field -->
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Status</mat-label>
+      <mat-select [(ngModel)]="task.status" required>
+        <mat-option *ngFor="let status of statuses" [value]="status">{{ status }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Due Date Field -->
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Due Date</mat-label>
+      <input
+        matInput
+        [matDatepicker]="picker"
+        [(ngModel)]="task.dueDate"
+        placeholder="Select due date"
+        required
+      />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="footer">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="!validateForm()"
+    (click)="submit()"
+  >
+    Submit
+  </button>
+</mat-dialog-actions>
