@@ -14,7 +14,7 @@ This project is a task management application consisting ofa backend build with 
 
 #### 1. Backend
 
-Navigate to the 'backend-springboot' directory and follow the instructions in the 'HELP.md' file.
+Navigate to the 'backend-springboot' directory and follow the instructions in the 'README.md' file.
 
 **Build and run the backend**:
     '''sh
