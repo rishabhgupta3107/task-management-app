@@ -1,27 +1,40 @@
-# Frontend
+# Task Management Frontend
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.11.
+This is the frontend of the Task Management Application built with Angular. It provides a user interface for user authentication and managing tasks.
 
-## Development server
+## Technologies Used
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+- Angular
+- Angular Material
+- JWT (JSON Web Token)
+- Yarn
 
-## Code scaffolding
+## Getting Started
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### Prerequisites
 
-## Build
+- Node.js 16.x
+- Yarn
+- Angular CLI
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+### Setup
 
-## Running unit tests
+1. **Install dependencies**:
+   ```sh
+   yarn install
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+2. **Run the application**:
+   ng serve
 
-## Running end-to-end tests
+3. **Access the application**: Open your web browser and navigate to http://localhost:4200.
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+### Features
+User Authentication: Login using username and password.
+Task Management: Create, read, update, and delete tasks.
 
-## Further help
+Security
+Ensure that the stored JWT token is handled securely and removed on logout to prevent unauthorized access.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+### Summary
+
+By following this guide, you can set up the backend with Spring Boot, leveraging JWT for security and enabling CORS to allow requests from the frontend. Additionally, the frontend is implemented using Angular and Yarn, with full details provided in the respective README files. This setup will ensure smooth development and deployment of your task management application. If you have any more questions or need further assistance, feel free to ask!
