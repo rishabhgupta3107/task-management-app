@@ -21,16 +21,16 @@ describe('AuthService', () => {
 
   it('should login and store the token', () => {
     const dummyToken = 'test.jwt.token';
-
+  
     service.login('john', 'password').subscribe();
-
+  
     const req = httpMock.expectOne(`${service['baseUrl']}/login`);
     expect(req.request.method).toBe('POST');
-    req.flush(dummyToken, { status: 200, statusText: 'OK' });
-
+    req.flush({ jwt: dummyToken }, { status: 200, statusText: 'OK' });
+  
     expect(localStorage.getItem('token')).toBe(dummyToken);
   });
-
+  
   it('should return true if the user is logged in', () => {
     localStorage.setItem('token', 'test.jwt.token');
     expect(service.isLoggedIn()).toBeTrue();
