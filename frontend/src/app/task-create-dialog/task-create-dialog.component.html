@@ -43,9 +43,8 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end" class="footer">
-  <button mat-button type="button" (click)="cancel()">Cancel</button>
-  <button mat-raised-button color="primary" type="button"
-          [disabled]="taskForm.invalid" (click)="submit()">
-    Submit
+  <button class="btn btn-ghost" type="button" (click)="cancel()">Cancel</button>
+  <button class="btn btn-primary" type="button" [disabled]="taskForm.invalid" (click)="submit()">
+    Create task
   </button>
 </mat-dialog-actions>

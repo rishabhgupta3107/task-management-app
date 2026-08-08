@@ -1,91 +1,22 @@
-/* Container for the entire logout section */
-.logout-container {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-image: url('../../assets/background.jpg');
-    background-size: cover;
-    background-position: center;
-    position: relative; /* To position the logout button inside it */
-  }
-  
-  /* Card styling for the logout */
-  .logout-card {
-    width: 350px;
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-  }
-  
-  /* Logout title and message */
-  .logout-header {
-    margin-bottom: 20px;
-  }
-  
-  .logout-title {
-    font-size: 1.5em;
-    color: #333;
-    font-weight: 600;
-  }
-  
-  .logout-message {
-    color: #555;
-    font-size: 1em;
-    margin-top: 10px;
-  }
-  
-  /* Action buttons */
-  .logout-actions {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 20px;
-  }
-  
-  /* Common styling for both buttons */
-  .logout-button {
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .logout-button:hover {
-    background-color: #f1f1f1;
-  }
-  
-  /* Styling for the confirm (Logout) button */
-  .logout-confirm {
-    background-color: #f44336; /* Red color for logout */
-    color: white;
-    border: none;
-  }
-  
-  .logout-confirm:hover {
-    background-color: #d32f2f; /* Darker red on hover */
-  }
-  
-  /* Logout button in the top-right corner */
-  .logout-button-top-right {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background-color: #f44336; /* Red color for logout */
-    color: white;
-    border: none;
-    font-size: 16px;
-    font-weight: bold;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .logout-button-top-right:hover {
-    background-color: #d32f2f; /* Darker red on hover */
-  }
-  
+.logout {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--bg);
+}
+.logout-card {
+  width: 380px;
+  max-width: 100%;
+  padding: 32px;
+  text-align: center;
+}
+.logout-title { font-size: 24px; color: var(--text); }
+.logout-message { color: var(--text-muted); margin: 10px 0 24px; font-size: 14px; }
+.logout-actions { display: flex; gap: 12px; justify-content: center; }
+.btn.danger {
+  border-color: color-mix(in srgb, var(--prio-high) 40%, var(--border-strong));
+  color: var(--prio-high);
+}
+.btn.danger:hover { background: color-mix(in srgb, var(--prio-high) 12%, transparent); }

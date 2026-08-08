@@ -1,0 +1,20 @@
+<div class="cp-backdrop" *ngIf="open()" (click)="close()">
+  <div class="cp card" (click)="$event.stopPropagation()" role="dialog" aria-label="Command palette">
+    <div class="cp-input">
+      <mat-icon>bolt</mat-icon>
+      <input #cpInput type="text" placeholder="Type a command…" autofocus
+             [value]="query()" (input)="onInput(cpInput.value)">
+      <span class="kbd">esc</span>
+    </div>
+    <div class="cp-list">
+      <button class="cp-item" *ngFor="let c of results; let i = index"
+              [class.active]="i === activeIndex()"
+              (mouseenter)="activeIndex.set(i)" (click)="select(c)">
+        <mat-icon>{{ c.icon }}</mat-icon>
+        <span class="cp-label">{{ c.label }}</span>
+        <span class="cp-hint mono" *ngIf="c.hint">{{ c.hint }}</span>
+      </button>
+      <p class="cp-empty" *ngIf="results.length === 0">No matching commands.</p>
+    </div>
+  </div>
+</div>

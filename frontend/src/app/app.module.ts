@@ -27,6 +27,9 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { TaskCreateDialogComponent } from './task-create-dialog/task-create-dialog.component';
 import { RegisterComponent } from './register/register.component';
+import { WelcomeComponent } from './welcome/welcome.component';
+import { ThemeToggleComponent } from './shared/theme-toggle.component';
+import { CommandPaletteComponent } from './command-palette/command-palette.component';
 import { MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
@@ -39,6 +42,9 @@ import { MatNativeDateModule } from '@angular/material/core';
     TaskDetailComponent,
     TaskListComponent,
     TaskCreateDialogComponent,
+    WelcomeComponent,
+    ThemeToggleComponent,
+    CommandPaletteComponent,
   ],
   imports: [
     HttpClientModule,

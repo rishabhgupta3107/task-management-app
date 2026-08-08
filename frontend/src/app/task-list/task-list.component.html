@@ -1,74 +1,102 @@
-<div class="top-bar">
-  <div class="left">
-    <h1>Task list</h1>
-  </div>
-  <div class="right">
-    <button mat-icon-button [matMenuTriggerFor]="settingsMenu" aria-label="Settings">
-      <mat-icon>settings</mat-icon>
-    </button>
-    <mat-menu #settingsMenu="matMenu" xPosition="after" yPosition="below">
-      <button mat-menu-item (click)="openLogoutDialog()">Logout</button>
-    </mat-menu>
-  </div>
-</div>
+<div class="board">
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="tb-left">
+      <a class="brand" routerLink="/welcome"><span class="brand-mark">◤</span> HELM</a>
+      <span class="tb-divider"></span>
+      <span class="tb-crumb mono">board</span>
+    </div>
+    <div class="tb-right">
+      <div class="search">
+        <mat-icon>search</mat-icon>
+        <input #filterInput type="text" placeholder="Filter tasks…"
+               (keyup)="applyFilter(filterInput.value)" aria-label="Filter tasks">
+      </div>
+      <app-theme-toggle></app-theme-toggle>
+      <button class="btn btn-primary new-btn" (click)="openTaskCreateDialog()">
+        <mat-icon>add</mat-icon> New task
+      </button>
+      <button class="btn btn-ghost icon-btn" (click)="logout()" aria-label="Sign out" title="Sign out">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </div>
+  </header>
 
-<div class="filter">
-  <mat-form-field appearance="outline" class="title-input">
-    <mat-label>Filter</mat-label>
-    <input matInput #filterInput (keyup)="applyFilter(filterInput.value)" placeholder="Search title or description">
-  </mat-form-field>
+  <!-- Stats -->
+  <section class="stats">
+    <div class="stat">
+      <span class="stat-label mono">TOTAL</span>
+      <span class="stat-value mono">{{ counts.ALL }}</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label mono"><span class="dot s-todo"></span>TO DO</span>
+      <span class="stat-value mono">{{ counts.TO_DO }}</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label mono"><span class="dot s-progress"></span>IN PROGRESS</span>
+      <span class="stat-value mono">{{ counts.IN_PROGRESS }}</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label mono"><span class="dot s-done"></span>DONE</span>
+      <span class="stat-value mono">{{ counts.DONE }}</span>
+    </div>
+    <div class="stat-hint mono">
+      <span class="kbd">⌘</span><span class="kbd">K</span> to command
+    </div>
+  </section>
 
-  <button mat-raised-button color="primary" class="create-button" (click)="openTaskCreateDialog()">
-    Create a Task
-  </button>
-</div>
+  <!-- Table -->
+  <section class="table-wrap card">
+    <div class="thead mono">
+      <button class="th col-id" (click)="toggleSort('id')">
+        ID <span class="sort" *ngIf="sortActive === 'id'">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
+      </button>
+      <button class="th col-title" (click)="toggleSort('title')">
+        TASK <span class="sort" *ngIf="sortActive === 'title'">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
+      </button>
+      <button class="th col-status" (click)="toggleSort('status')">
+        STATUS <span class="sort" *ngIf="sortActive === 'status'">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
+      </button>
+      <button class="th col-prio" (click)="toggleSort('priority')">
+        PRIORITY <span class="sort" *ngIf="sortActive === 'priority'">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
+      </button>
+      <button class="th col-due" (click)="toggleSort('dueDate')">
+        DUE <span class="sort" *ngIf="sortActive === 'dueDate'">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
+      </button>
+      <span class="th col-act"></span>
+    </div>
 
-<div class="task-table">
-  <table mat-table [dataSource]="tasks" matSort (matSortChange)="onSort($event)" class="mat-elevation-z8">
+    <div class="tbody">
+      <div class="trow" *ngFor="let t of tasks; let i = index" (click)="viewTaskDetails(t)"
+           [style.animation-delay.ms]="i * 28" tabindex="0"
+           (keyup.enter)="viewTaskDetails(t)">
+        <span class="col-id mono text-faint">#{{ t.id }}</span>
+        <span class="col-title">{{ t.title }}</span>
+        <span class="col-status">
+          <span class="chip s-{{ t.status | lowercase }}"><span class="dot"></span>{{ t.status }}</span>
+        </span>
+        <span class="col-prio">
+          <span class="chip p-{{ t.priority | lowercase }}">{{ t.priority }}</span>
+        </span>
+        <span class="col-due mono text-faint">{{ t.dueDate || '—' }}</span>
+        <span class="col-act">
+          <button class="row-act" (click)="confirmDeleteTask(t, $event)" aria-label="Delete task">
+            <mat-icon>delete_outline</mat-icon>
+          </button>
+        </span>
+      </div>
 
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-      <td mat-cell *matCellDef="let row"> {{ row.id }} </td>
-    </ng-container>
+      <div class="empty" *ngIf="!loading && tasks.length === 0">
+        <mat-icon>inbox</mat-icon>
+        <p>No tasks yet.</p>
+        <button class="btn btn-primary" (click)="openTaskCreateDialog()">Create your first task</button>
+      </div>
+    </div>
 
-    <ng-container matColumnDef="title">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Title </th>
-      <td mat-cell *matCellDef="let row"> {{ row.title }} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
-      <td mat-cell *matCellDef="let row"> {{ row.status }} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="priority">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Priority </th>
-      <td mat-cell *matCellDef="let row"> {{ row.priority }} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="action">
-      <th mat-header-cell *matHeaderCellDef> Action </th>
-      <td mat-cell *matCellDef="let row">
-        <button mat-icon-button (click)="viewTaskDetails(row)" aria-label="View task details">
-          <mat-icon>info</mat-icon>
-        </button>
-        <button mat-icon-button color="warn" (click)="confirmDeleteTask(row)" aria-label="Delete task">
-          <mat-icon>delete</mat-icon>
-        </button>
-      </td>
-    </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-  </table>
-
-  <p class="empty-state" *ngIf="!loading && tasks.length === 0">No tasks found.</p>
-
-  <mat-paginator
-    [length]="totalElements"
-    [pageIndex]="pageIndex"
-    [pageSize]="pageSize"
-    [pageSizeOptions]="pageSizeOptions"
-    (page)="onPage($event)">
-  </mat-paginator>
+    <div class="pager mono" *ngIf="!searchKeyword && totalPages > 1">
+      <button class="btn btn-ghost" (click)="prevPage()" [disabled]="pageIndex === 0">‹ Prev</button>
+      <span class="pager-info">Page {{ pageIndex + 1 }} / {{ totalPages }} · {{ totalElements }} tasks</span>
+      <button class="btn btn-ghost" (click)="nextPage()" [disabled]="pageIndex >= totalPages - 1">Next ›</button>
+    </div>
+  </section>
 </div>

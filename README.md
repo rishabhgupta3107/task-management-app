@@ -1,8 +1,23 @@
-# Task Management Application
+# HELM — Mission control for your work
 
-A task management application with a **Spring Boot** backend and an **Angular 17** frontend.
-It supports JWT authentication, self-service registration, and per-user task CRUD with
-server-side pagination, search, and filtering. Each user only ever sees their own tasks.
+HELM is a keyboard-first "task terminal" — the speed of Linear, the glanceable density of a
+trading terminal, and the delight of Raycast — for operators running live, time-sensitive work.
+
+It's built on a **Spring Boot** backend and an **Angular 17** frontend, with JWT authentication,
+self-service registration, and per-user task CRUD (server-side pagination, search, filtering).
+Each user only ever sees their own tasks.
+
+### Experience
+
+- **Scroll-driven landing page** (`/welcome`) with a GSAP + Lenis motion showpiece — an orbiting
+  ring of task cards that rotates as you scroll.
+- **Dark "terminal" + light themes** with an animated toggle (persisted per user).
+- **⌘K command palette** — create tasks, jump around, toggle theme, or sign out from anywhere.
+- **Terminal-grade board** with status/priority chips, sortable columns, and animated rows.
+- Polished micro-interactions and route transitions throughout; respects
+  `prefers-reduced-motion`.
+
+Tech: Angular 17, Angular Material (themed), GSAP + ScrollTrigger, Lenis smooth scroll.
 
 ## Architecture
 

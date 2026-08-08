@@ -1,1 +1,4 @@
-<router-outlet></router-outlet>
+<main [@routeFade]="routeKey(outlet)">
+  <router-outlet #outlet="outlet"></router-outlet>
+</main>
+<app-command-palette></app-command-palette>

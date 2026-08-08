@@ -1,13 +1,10 @@
-<div class="logout-container">
-  <div class="logout-card">
-    <div class="logout-header">
-      <h1 class="logout-title">Log out?</h1>
-      <p class="logout-message">You'll need to sign in again to access your tasks.</p>
-    </div>
+<div class="logout">
+  <div class="logout-card card">
+    <h1 class="logout-title">Log out?</h1>
+    <p class="logout-message">You'll need to sign in again to access your tasks.</p>
     <div class="logout-actions">
-      <button mat-button type="button" (click)="cancelLogout()" class="logout-button">Cancel</button>
-      <button mat-raised-button color="warn" type="button" (click)="confirmLogout()"
-              class="logout-button logout-confirm">Logout</button>
+      <button class="btn btn-ghost" type="button" (click)="cancelLogout()">Cancel</button>
+      <button class="btn danger" type="button" (click)="confirmLogout()">Log out</button>
     </div>
   </div>
 </div>

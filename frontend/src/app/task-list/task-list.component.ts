@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { PageEvent } from '@angular/material/paginator';
-import { Sort } from '@angular/material/sort';
 import { AuthService } from '../auth.service';
 import { TaskService } from '../services/task.service';
 import { ConfirmService } from '../services/confirm.service';
-import { Task } from '../task';
+import { Task, TaskStatus } from '../task';
 import { TaskCreateDialogComponent } from '../task-create-dialog/task-create-dialog.component';
+
+type SortDir = 'asc' | 'desc' | '';
 
 @Component({
   selector: 'app-task-list',
@@ -16,15 +16,16 @@ import { TaskCreateDialogComponent } from '../task-create-dialog/task-create-dia
 })
 export class TaskListComponent implements OnInit {
   tasks: Task[] = [];
-  displayedColumns: string[] = ['id', 'title', 'status', 'priority', 'action'];
 
   totalElements = 0;
+  totalPages = 0;
   pageIndex = 0;
   pageSize = 10;
-  readonly pageSizeOptions = [5, 10, 25, 100];
 
-  private sortExpr?: string;
-  private searchKeyword = '';
+  sortActive = '';
+  sortDir: SortDir = '';
+
+  searchKeyword = '';
   loading = false;
 
   constructor(
@@ -32,23 +33,41 @@ export class TaskListComponent implements OnInit {
     private authService: AuthService,
     private confirmService: ConfirmService,
     private dialog: MatDialog,
+    private route: ActivatedRoute,
     private router: Router
   ) {}
 
   ngOnInit(): void {
     this.loadTasks();
+    if (this.route.snapshot.queryParamMap.get('new') === '1') {
+      // Opened from the command palette.
+      setTimeout(() => this.openTaskCreateDialog(), 0);
+    }
+  }
+
+  // ----- derived stats -----
+  get counts(): Record<TaskStatus | 'ALL', number> {
+    const base: Record<TaskStatus | 'ALL', number> = {
+      ALL: this.totalElements,
+      TO_DO: 0,
+      IN_PROGRESS: 0,
+      DONE: 0,
+    };
+    for (const t of this.tasks) {
+      base[t.status] = (base[t.status] ?? 0) + 1;
+    }
+    return base;
   }
 
   loadTasks(): void {
     this.loading = true;
 
-    // When a keyword is present we use the server-side search endpoint (unpaginated);
-    // otherwise we use the paginated listing.
     if (this.searchKeyword) {
       this.taskService.searchTasks(this.searchKeyword).subscribe({
         next: (tasks) => {
           this.tasks = tasks;
           this.totalElements = tasks.length;
+          this.totalPages = 1;
           this.loading = false;
         },
         error: () => (this.loading = false),
@@ -56,10 +75,12 @@ export class TaskListComponent implements OnInit {
       return;
     }
 
-    this.taskService.getTasks(this.pageIndex, this.pageSize, this.sortExpr).subscribe({
+    const sort = this.sortDir ? `${this.sortActive},${this.sortDir}` : undefined;
+    this.taskService.getTasks(this.pageIndex, this.pageSize, sort).subscribe({
       next: (page) => {
         this.tasks = page.content;
         this.totalElements = page.totalElements;
+        this.totalPages = page.totalPages;
         this.loading = false;
       },
       error: () => (this.loading = false),
@@ -72,36 +93,53 @@ export class TaskListComponent implements OnInit {
     this.loadTasks();
   }
 
-  onPage(event: PageEvent): void {
-    this.pageIndex = event.pageIndex;
-    this.pageSize = event.pageSize;
+  toggleSort(column: string): void {
+    if (this.sortActive !== column) {
+      this.sortActive = column;
+      this.sortDir = 'asc';
+    } else {
+      this.sortDir = this.sortDir === 'asc' ? 'desc' : this.sortDir === 'desc' ? '' : 'asc';
+      if (!this.sortDir) {
+        this.sortActive = '';
+      }
+    }
+    this.pageIndex = 0;
     this.loadTasks();
   }
 
-  onSort(sort: Sort): void {
-    this.sortExpr = sort.direction ? `${sort.active},${sort.direction}` : undefined;
-    this.pageIndex = 0;
-    this.loadTasks();
+  prevPage(): void {
+    if (this.pageIndex > 0) {
+      this.pageIndex--;
+      this.loadTasks();
+    }
+  }
+
+  nextPage(): void {
+    if (this.pageIndex < this.totalPages - 1) {
+      this.pageIndex++;
+      this.loadTasks();
+    }
   }
 
   viewTaskDetails(task: Task): void {
     this.router.navigate(['/tasks', task.id]);
   }
 
-  confirmDeleteTask(task: Task): void {
+  confirmDeleteTask(task: Task, event: MouseEvent): void {
+    event.stopPropagation();
     if (task.id === undefined) {
       return;
     }
-    this.confirmService.confirm('Are you sure you want to delete this task?').subscribe((confirmed) => {
-      if (confirmed && task.id !== undefined) {
+    this.confirmService.confirm('Delete this task? This cannot be undone.', 'Delete task').subscribe((ok) => {
+      if (ok && task.id !== undefined) {
         this.taskService.deleteTask(task.id).subscribe(() => this.loadTasks());
       }
     });
   }
 
-  openLogoutDialog(): void {
-    this.confirmService.confirm('Do you really want to log out?').subscribe((confirmed) => {
-      if (confirmed) {
+  logout(): void {
+    this.confirmService.confirm('Sign out of HELM?', 'Sign out').subscribe((ok) => {
+      if (ok) {
         this.authService.logout();
       }
     });
@@ -109,7 +147,7 @@ export class TaskListComponent implements OnInit {
 
   openTaskCreateDialog(): void {
     this.dialog
-      .open(TaskCreateDialogComponent, { width: '500px', maxWidth: '90vw' })
+      .open(TaskCreateDialogComponent, { width: '520px', maxWidth: '92vw', panelClass: 'helm-dialog' })
       .afterClosed()
       .subscribe((task: Task | undefined) => {
         if (task) {
