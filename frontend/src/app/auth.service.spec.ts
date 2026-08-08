@@ -31,9 +31,18 @@ describe('AuthService', () => {
     expect(localStorage.getItem('token')).toBe(dummyToken);
   });
   
-  it('should return true if the user is logged in', () => {
-    localStorage.setItem('token', 'test.jwt.token');
+  // Builds a minimal JWT whose payload carries the given `exp` (seconds since epoch).
+  const makeToken = (expSeconds: number): string =>
+    `header.${btoa(JSON.stringify({ exp: expSeconds }))}.signature`;
+
+  it('should return true for a valid, unexpired token', () => {
+    localStorage.setItem('token', makeToken(Math.floor(Date.now() / 1000) + 3600));
     expect(service.isLoggedIn()).toBeTrue();
+  });
+
+  it('should return false for an expired token', () => {
+    localStorage.setItem('token', makeToken(Math.floor(Date.now() / 1000) - 3600));
+    expect(service.isLoggedIn()).toBeFalse();
   });
 
   it('should return false if the user is not logged in', () => {

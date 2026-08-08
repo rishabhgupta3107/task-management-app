@@ -1,8 +1,9 @@
 package com.rishabhgupta3107.taskmanagement.backend_springboot.security;
 
-import com.rishabhgupta3107.taskmanagement.backend_springboot.service.CustomUserDetailsService;
-import java.util.Arrays;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,7 +11,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,11 +23,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-  @Autowired private JwtFilter jwtFilter;
+  private final JwtFilter jwtFilter;
 
-  @Autowired private CustomUserDetailsService userDetailsService;
+  @Value("${app.cors.allowed-origins}")
+  private List<String> allowedOrigins;
 
   @Bean
   public PasswordEncoder passwordEncoder() {
@@ -42,21 +44,23 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
     http.csrf(csrf -> csrf.disable())
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .authorizeHttpRequests(
             authorize ->
                 authorize
-                    .requestMatchers("/api/auth/**", "/h2-console/**", "/actuator/**")
+                    .requestMatchers("/api/auth/**")
                     .permitAll()
+                    // Health endpoint is public for load balancers; everything else is protected.
+                    .requestMatchers(EndpointRequest.to("health"))
+                    .permitAll()
+                    .requestMatchers(EndpointRequest.toAnyEndpoint())
+                    .authenticated()
                     .anyRequest()
                     .authenticated())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()));
-
-    http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
+        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }
@@ -64,9 +68,9 @@ public class SecurityConfig {
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
-    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
-    configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
+    configuration.setAllowedOrigins(allowedOrigins);
+    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
     configuration.setAllowCredentials(true);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

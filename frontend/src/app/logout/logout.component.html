@@ -1,14 +1,13 @@
 <div class="logout-container">
-    <div class="logout-card">
-      <div class="logout-header">
-        <h2 class="logout-title">Logout?</h2>
-        <p class="logout-message">Mat kar bhai, main ro dunga</p>
-      </div>
-      <div class="logout-actions">
-        <button mat-button (click)="cancelLogout()" class="logout-button">Cancel</button>
-        <button mat-raised-button color="warn" (click)="confirmLogout()" class="logout-button logout-confirm">Logout</button>
-      </div>
+  <div class="logout-card">
+    <div class="logout-header">
+      <h1 class="logout-title">Log out?</h1>
+      <p class="logout-message">You'll need to sign in again to access your tasks.</p>
     </div>
-    <button class="logout-button-top-right" mat-raised-button color="warn" (click)="confirmLogout()">Logout</button>
+    <div class="logout-actions">
+      <button mat-button type="button" (click)="cancelLogout()" class="logout-button">Cancel</button>
+      <button mat-raised-button color="warn" type="button" (click)="confirmLogout()"
+              class="logout-button logout-confirm">Logout</button>
+    </div>
   </div>
-  
+</div>

@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LogoutComponent } from './logout/logout.component';
 import { ConfirmationDialogueComponent } from './confirmation-dialogue/confirmation-dialogue.component';
@@ -15,33 +15,30 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTableModule } from '@angular/material/table';
+import { MatSortModule } from '@angular/material/sort';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TaskDetailComponent } from './task-detail/task-detail.component';
 import { TaskListComponent } from './task-list/task-list.component';
-import { JwtModule } from "@auth0/angular-jwt";
-import { AuthService } from './auth.service';
-import { TaskService } from './services/task.service';
 import { TokenInterceptorService } from './services/token-interceptor.service';
-import {MatInput} from "@angular/material/input";
-import {MatButton, MatIconButton} from "@angular/material/button";
-import {MatIcon} from "@angular/material/icon";
-import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
-import {MatPaginator} from "@angular/material/paginator";
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { TaskCreateDialogComponent } from './task-create-dialog/task-create-dialog.component';
-import { MatMomentDateModule } from '@angular/material-moment-adapter';
-
-export function jwtTokenGetter() {
-  return localStorage.getItem('token');
-}
+import { RegisterComponent } from './register/register.component';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
+    RegisterComponent,
     LogoutComponent,
     ConfirmationDialogueComponent,
     TaskDetailComponent,
     TaskListComponent,
-    TaskCreateDialogComponent
+    TaskCreateDialogComponent,
   ],
   imports: [
     HttpClientModule,
@@ -55,26 +52,20 @@ export function jwtTokenGetter() {
     MatDialogModule,
     MatSelectModule,
     MatDatepickerModule,
-    MatMomentDateModule,
+    MatNativeDateModule,
     MatToolbarModule,
     MatTableModule,
-    JwtModule.forRoot({
-      config: {
-        tokenGetter: jwtTokenGetter,
-        allowedDomains: ['localhost:8080'],
-        disallowedRoutes: []
-      }
-    }),
-    MatInput,
-    MatButton,
-    MatIcon,
-    MatMenu,
-    MatMenuTrigger,
-    MatMenuItem,
-    MatIconButton,
-    MatPaginator
+    MatSortModule,
+    MatPaginatorModule,
+    MatProgressSpinnerModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatMenuModule,
   ],
-  providers: [ AuthService, TaskService, { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true } ],
-  bootstrap: [AppComponent]
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true },
+  ],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

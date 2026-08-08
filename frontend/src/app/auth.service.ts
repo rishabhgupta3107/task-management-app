@@ -2,34 +2,52 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { map, Observable } from 'rxjs';
+import { environment } from '../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
+  private readonly baseUrl = `${environment.apiUrl}/api/auth`;
+  private readonly tokenKey = 'token';
 
-  private baseUrl = 'http://localhost:8080/api/auth';
+  constructor(private http: HttpClient, private router: Router) {}
 
-  constructor(private http: HttpClient, private router: Router) { }
-
-  login(username: string, password: string): Observable<void>{
-    return this.http.post<{jwt: string}>(`${this.baseUrl}/login`, { username, password }).pipe(
-      map(response => {
-        localStorage.setItem('token', response.jwt);
-      })
-    )
+  login(username: string, password: string): Observable<void> {
+    return this.http
+      .post<{ jwt: string }>(`${this.baseUrl}/login`, { username, password })
+      .pipe(map((response) => localStorage.setItem(this.tokenKey, response.jwt)));
   }
 
-  logout() {
-    localStorage.removeItem('token');
+  register(username: string, password: string): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/register`, { username, password });
+  }
+
+  logout(): void {
+    localStorage.removeItem(this.tokenKey);
     this.router.navigate(['/login']);
   }
 
-  isLoggedIn() {
-    return !!localStorage.getItem('token');
+  getToken(): string | null {
+    return localStorage.getItem(this.tokenKey);
   }
 
-  getToken(): string | null {
-    return localStorage.getItem('token');
+  isLoggedIn(): boolean {
+    const token = this.getToken();
+    return !!token && !this.isTokenExpired(token);
+  }
+
+  /** Decodes the JWT payload and checks the `exp` claim without any extra dependency. */
+  private isTokenExpired(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      if (!payload.exp) {
+        return false;
+      }
+      return payload.exp * 1000 <= Date.now();
+    } catch {
+      // A token we can't parse is treated as invalid.
+      return true;
+    }
   }
 }

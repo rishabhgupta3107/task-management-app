@@ -1,50 +1,51 @@
 <h2 mat-dialog-title class="header">Create Task</h2>
 <mat-dialog-content class="content">
-  <form>
-    <!-- Title Field -->
+  <form [formGroup]="taskForm" (ngSubmit)="submit()" novalidate>
     <mat-form-field appearance="outline" class="form-field">
       <mat-label>Title</mat-label>
-      <input matInput [(ngModel)]="task.title" placeholder="Enter task title" required />
+      <input matInput formControlName="title" placeholder="Enter task title" required>
+      <mat-error *ngIf="taskForm.controls['title'].hasError('required')">Title is required.</mat-error>
+      <mat-error *ngIf="taskForm.controls['title'].hasError('maxlength')">Title cannot exceed 100 characters.</mat-error>
     </mat-form-field>
 
-    <!-- Description Field -->
     <mat-form-field appearance="outline" class="form-field">
       <mat-label>Description</mat-label>
-      <textarea matInput [(ngModel)]="task.description" placeholder="Enter task description" required></textarea>
+      <textarea matInput formControlName="description" placeholder="Enter task description" required></textarea>
+      <mat-error *ngIf="taskForm.controls['description'].hasError('required')">Description is required.</mat-error>
+      <mat-error *ngIf="taskForm.controls['description'].hasError('maxlength')">Description cannot exceed 1000 characters.</mat-error>
     </mat-form-field>
 
-    <!-- Status Field -->
     <mat-form-field appearance="outline" class="form-field">
       <mat-label>Status</mat-label>
-      <mat-select [(ngModel)]="task.status" required>
+      <mat-select formControlName="status" required>
         <mat-option *ngFor="let status of statuses" [value]="status">{{ status }}</mat-option>
       </mat-select>
+      <mat-error *ngIf="taskForm.controls['status'].hasError('required')">Status is required.</mat-error>
     </mat-form-field>
 
-    <!-- Due Date Field -->
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Priority</mat-label>
+      <mat-select formControlName="priority" required>
+        <mat-option *ngFor="let priority of priorities" [value]="priority">{{ priority }}</mat-option>
+      </mat-select>
+      <mat-error *ngIf="taskForm.controls['priority'].hasError('required')">Priority is required.</mat-error>
+    </mat-form-field>
+
     <mat-form-field appearance="outline" class="form-field">
       <mat-label>Due Date</mat-label>
-      <input
-        matInput
-        [matDatepicker]="picker"
-        [(ngModel)]="task.dueDate"
-        placeholder="Select due date"
-        required
-      />
+      <input matInput [matDatepicker]="picker" formControlName="dueDate" placeholder="Select due date" required>
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
+      <mat-error *ngIf="taskForm.controls['dueDate'].hasError('required')">Due date is required.</mat-error>
+      <mat-error *ngIf="taskForm.controls['dueDate'].hasError('invalidDate')">Due date must be in the future.</mat-error>
     </mat-form-field>
   </form>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end" class="footer">
-  <button mat-button (click)="cancel()">Cancel</button>
-  <button
-    mat-raised-button
-    color="primary"
-    [disabled]="validateForm()"
-    (click)="submit()"
-  >
+  <button mat-button type="button" (click)="cancel()">Cancel</button>
+  <button mat-raised-button color="primary" type="button"
+          [disabled]="taskForm.invalid" (click)="submit()">
     Submit
   </button>
 </mat-dialog-actions>

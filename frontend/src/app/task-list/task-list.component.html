@@ -3,8 +3,8 @@
     <h1>Task list</h1>
   </div>
   <div class="right">
-    <button mat-icon-button [matMenuTriggerFor]="settingsMenu">
-      <mat-icon aria-label="Setting icon-button">settings</mat-icon>
+    <button mat-icon-button [matMenuTriggerFor]="settingsMenu" aria-label="Settings">
+      <mat-icon>settings</mat-icon>
     </button>
     <mat-menu #settingsMenu="matMenu" xPosition="after" yPosition="below">
       <button mat-menu-item (click)="openLogoutDialog()">Logout</button>
@@ -14,52 +14,61 @@
 
 <div class="filter">
   <mat-form-field appearance="outline" class="title-input">
-    <input matInput (keyup)="applyFilter($event.target)" placeholder="Filter">
+    <mat-label>Filter</mat-label>
+    <input matInput #filterInput (keyup)="applyFilter(filterInput.value)" placeholder="Search title or description">
   </mat-form-field>
 
-  <button mat-raised-button color="primary" class="create-button" (click)="openTaskCreateDialog()">Create a Task</button>
+  <button mat-raised-button color="primary" class="create-button" (click)="openTaskCreateDialog()">
+    Create a Task
+  </button>
 </div>
 
 <div class="task-table">
-  <mat-table [dataSource]="filteredTasks" class="mat-elevation-z8" matSort>
+  <table mat-table [dataSource]="tasks" matSort (matSortChange)="onSort($event)" class="mat-elevation-z8">
 
-    <!-- ID Column -->
     <ng-container matColumnDef="id">
-      <mat-header-cell *matHeaderCellDef mat-sort-header> ID </mat-header-cell>
-      <mat-cell *matCellDef="let row"> {{row.id}} </mat-cell>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+      <td mat-cell *matCellDef="let row"> {{ row.id }} </td>
     </ng-container>
 
-    <!-- Title Column -->
     <ng-container matColumnDef="title">
-      <mat-header-cell *matHeaderCellDef mat-sort-header> Title </mat-header-cell>
-      <mat-cell *matCellDef="let row"> {{row.title}} </mat-cell>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Title </th>
+      <td mat-cell *matCellDef="let row"> {{ row.title }} </td>
     </ng-container>
 
-    <!-- Status Column -->
     <ng-container matColumnDef="status">
-      <mat-header-cell *matHeaderCellDef mat-sort-header> Status </mat-header-cell>
-      <mat-cell *matCellDef="let row"> {{row.status}} </mat-cell>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
+      <td mat-cell *matCellDef="let row"> {{ row.status }} </td>
     </ng-container>
 
-    <!-- Action Column --> <!----Not sure if this will work, need to check-->>
+    <ng-container matColumnDef="priority">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Priority </th>
+      <td mat-cell *matCellDef="let row"> {{ row.priority }} </td>
+    </ng-container>
+
     <ng-container matColumnDef="action">
-      <mat-header-cell *matHeaderCellDef mat-sort-header> Action </mat-header-cell>
-      <mat-cell *matCellDef="let row">
-        <button mat-icon-button (click)="viewTaskDetails(row)">
-          <mat-icon aria-label="View Task Details">info</mat-icon>
+      <th mat-header-cell *matHeaderCellDef> Action </th>
+      <td mat-cell *matCellDef="let row">
+        <button mat-icon-button (click)="viewTaskDetails(row)" aria-label="View task details">
+          <mat-icon>info</mat-icon>
         </button>
-        <button mat-icon-button color="warn" (click)="confirmDeleteTask(row)">
-          <mat-icon aria-label="Delete Task">delete</mat-icon>
+        <button mat-icon-button color="warn" (click)="confirmDeleteTask(row)" aria-label="Delete task">
+          <mat-icon>delete</mat-icon>
         </button>
-      </mat-cell>
+      </td>
     </ng-container>
 
-    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns;">
-    </mat-row>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
 
-  </mat-table>
+  <p class="empty-state" *ngIf="!loading && tasks.length === 0">No tasks found.</p>
 
-  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
-
+  <mat-paginator
+    [length]="totalElements"
+    [pageIndex]="pageIndex"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="pageSizeOptions"
+    (page)="onPage($event)">
+  </mat-paginator>
 </div>

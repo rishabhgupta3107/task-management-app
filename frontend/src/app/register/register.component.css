@@ -1,0 +1,41 @@
+.register-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url('../../assets/background.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.register-card {
+  width: 350px;
+  max-width: 90vw;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 24px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.register-title {
+  font-size: 1.5em;
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.form-error {
+  color: #b00020;
+  margin: 4px 0 12px;
+  font-size: 0.9em;
+}
+
+.login-link {
+  margin-top: 12px;
+  font-size: 0.9em;
+}

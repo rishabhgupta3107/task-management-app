@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
-import { MatDialogRef, MatDialog } from '@angular/material/dialog';
-import { ConfirmationDialogueComponent } from '../confirmation-dialogue/confirmation-dialogue.component';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
+import { ConfirmService } from '../services/confirm.service';
 import { Task } from '../task';
+import { TASK_PRIORITIES, TASK_STATUSES } from '../task-constants';
 
 @Component({
   selector: 'app-task-create-dialog',
@@ -9,45 +11,74 @@ import { Task } from '../task';
   styleUrls: ['./task-create-dialog.component.css'],
 })
 export class TaskCreateDialogComponent {
-  task: Task = {
-    id: 0,
-    title: '',
-    description: '',
-    status: '',
-    dueDate: new Date(),
-  };
+  readonly statuses = TASK_STATUSES;
+  readonly priorities = TASK_PRIORITIES;
 
-  statuses = ['TO_DO', 'IN_PROGRESS', 'DONE'];
+  taskForm: FormGroup;
 
   constructor(
-    private dialogRef: MatDialogRef<TaskCreateDialogComponent>,
-    private dialog: MatDialog
-  ) {}
-
-  validateForm(): boolean {
-    return (
-      !!this.task.title?.trim() &&
-      !!this.task.description?.trim() &&
-      !!this.task.status?.trim() &&
-      this.task.dueDate !== undefined &&
-      new Date(this.task.dueDate) > new Date()
-    );
+    private fb: FormBuilder,
+    private dialogRef: MatDialogRef<TaskCreateDialogComponent, Task>,
+    private confirmService: ConfirmService
+  ) {
+    this.taskForm = this.fb.group({
+      title: ['', [Validators.required, Validators.maxLength(100)]],
+      description: ['', [Validators.required, Validators.maxLength(1000)]],
+      status: ['', Validators.required],
+      priority: ['', Validators.required],
+      dueDate: [null, [Validators.required, futureDateValidator]],
+    });
   }
 
-  submit() {
-    const confirmationRef = this.dialog.open(ConfirmationDialogueComponent, {
-      width: '300px',
-      data: { message: 'Are you sure you want to create this task?' },
-    });
+  submit(): void {
+    if (this.taskForm.invalid) {
+      this.taskForm.markAllAsTouched();
+      return;
+    }
 
-    confirmationRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.dialogRef.close(this.task);
+    this.confirmService.confirm('Are you sure you want to create this task?').subscribe((confirmed) => {
+      if (confirmed) {
+        this.dialogRef.close(toTask(this.taskForm.value));
       }
     });
   }
 
-  cancel() {
+  cancel(): void {
     this.dialogRef.close();
   }
+}
+
+function futureDateValidator(control: AbstractControl): ValidationErrors | null {
+  if (!control.value) {
+    return null;
+  }
+  const selected = new Date(control.value);
+  const today = new Date();
+  selected.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+  return selected > today ? null : { invalidDate: 'Due date must be in the future.' };
+}
+
+function toTask(value: {
+  title: string;
+  description: string;
+  status: Task['status'];
+  priority: Task['priority'];
+  dueDate: Date;
+}): Task {
+  return {
+    title: value.title,
+    description: value.description,
+    status: value.status,
+    priority: value.priority,
+    dueDate: toIsoDate(value.dueDate),
+  };
+}
+
+function toIsoDate(date: Date): string {
+  // Local date -> 'yyyy-MM-dd' without timezone shift.
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }

@@ -1,0 +1,43 @@
+<div class="register-container">
+  <div class="register-card">
+    <h1 class="register-title">Create account</h1>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Username</mat-label>
+        <input matInput type="text" formControlName="username" autocomplete="username"
+               required aria-required="true">
+        <mat-error *ngIf="registerForm.controls['username'].hasError('required')">
+          Username is required.
+        </mat-error>
+        <mat-error *ngIf="registerForm.controls['username'].hasError('minlength')
+                          || registerForm.controls['username'].hasError('maxlength')">
+          Username must be 3–50 characters.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" formControlName="password" autocomplete="new-password"
+               required aria-required="true">
+        <mat-error *ngIf="registerForm.controls['password'].hasError('required')">
+          Password is required.
+        </mat-error>
+        <mat-error *ngIf="registerForm.controls['password'].hasError('minlength')">
+          Password must be at least 8 characters.
+        </mat-error>
+      </mat-form-field>
+
+      <p class="form-error" role="alert" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+      <button mat-raised-button color="primary" type="submit" class="full-width"
+              [disabled]="submitting">
+        {{ submitting ? 'Creating…' : 'Create account' }}
+      </button>
+
+      <p class="login-link">
+        Already have an account? <a routerLink="/login">Sign in</a>
+      </p>
+    </form>
+  </div>
+</div>

@@ -1,43 +1,141 @@
 # Task Management Application
-This project is a task management application consisting ofa backend build with Spring Boot and a frontend build with Angular. It includes features like user authentication using JWT, task CRUD operations, and user access control.
 
-## Quick Structure
+A task management application with a **Spring Boot** backend and an **Angular 17** frontend.
+It supports JWT authentication, self-service registration, and per-user task CRUD with
+server-side pagination, search, and filtering. Each user only ever sees their own tasks.
 
-### Prerequisites
+## Architecture
 
-- **Java 21 or higher**
-- **Node.js 16.x or higher**
-- **Angular CLI**
-- **Yarn or NPM**
+- **Backend** (`backend-springboot`): layered REST API — Controller → Service → Repository →
+  Entity — with a dedicated DTO layer (entities are never exposed on the wire), a global
+  exception handler, stateful-free JWT security, and Flyway-managed PostgreSQL schema.
+- **Frontend** (`frontend`): Angular 17 (NgModule) app with a typed service layer, an HTTP
+  interceptor for auth, a route guard, and reactive forms throughout.
 
-### Running the application 
+## Run with Docker (recommended)
 
-#### 1. Backend
+The fastest way to run the whole stack — Postgres, backend, and frontend — with one command.
+Requires only **Docker** and **Docker Compose**.
 
-Navigate to the 'backend-springboot' directory and follow the instructions in the 'README.md' file.
+```sh
+# Optional but recommended: set a strong JWT secret (≥ 32 chars)
+export JWT_SECRET="change-me-to-a-long-random-string-please-32ch"
 
-**Build and run the backend**:
-    '''sh
-    cd backend-springboot
-    ./mvnw spring-boot:run
+docker compose up --build
+```
 
-#### 2. Frontend
+Then open **http://localhost:8081** and sign in with `rishabh` / `password`.
 
-Navigate to the frontend directory and follow the instructions in the 'README.md' file.
+- The frontend (nginx) is published on port **8081** and proxies `/api/*` to the backend.
+- The backend and Postgres run on the internal Docker network; Postgres data persists in the
+  `pgdata` volume.
+- Flyway creates the schema and seeds data automatically on first start.
 
-1. **Install dependencies:**
-    
-    cd frontend
-    yarn install
+To stop and remove everything (including the database volume):
 
-2. **Run the frontend**
-    ng serve
+```sh
+docker compose down -v
+```
 
-3. **Access the application:**
-    Open your web browser and go to http;//localhost:4200
+---
 
-4. **Pre-existing credentials** 
-    Username : rishabh & Password : password
+The sections below describe running each part **manually** without Docker.
+
+## Prerequisites (manual setup)
+
+- **Java 21+**
+- **Node.js 18+** and npm
+- **PostgreSQL 14+** (a running instance)
+
+## 1. Database setup
+
+Create a database and user (defaults shown — override via environment variables):
+
+```sql
+CREATE DATABASE taskmanagement;
+CREATE USER taskuser WITH PASSWORD 'taskpass';
+GRANT ALL PRIVILEGES ON DATABASE taskmanagement TO taskuser;
+```
+
+Flyway runs the migrations in `src/main/resources/db/migration` automatically on startup,
+creating the schema and seeding one user and three example tasks.
+
+## 2. Backend
+
+Configuration is environment-driven (see `application.yml`). The important variables:
+
+| Variable | Default | Notes |
+|----------|---------|-------|
+| `DB_URL` | `jdbc:postgresql://localhost:5432/taskmanagement` | JDBC URL |
+| `DB_USERNAME` | `taskuser` | |
+| `DB_PASSWORD` | `taskpass` | |
+| `JWT_SECRET` | dev-only fallback | **Set a strong value (≥ 32 chars) in any real environment** |
+| `JWT_EXPIRATION_MS` | `3600000` | Access-token lifetime (1 hour) |
+| `CORS_ALLOWED_ORIGINS` | `http://localhost:4200` | Comma-separated |
+
+Run it:
+
+```sh
+cd backend-springboot
+export JWT_SECRET="change-me-to-a-long-random-string-please"
+./mvnw spring-boot:run
+```
+
+The API is served at `http://localhost:8080`. Actuator exposes only `/actuator/health`
+(public) and `/actuator/info` (authenticated).
+
+## 3. Frontend
+
+```sh
+cd frontend
+npm install
+npm start
+```
+
+Open `http://localhost:4200`.
+
+- Dev builds call the API at `http://localhost:8080` (`src/environments/environment.ts`).
+- Production builds expect the API on the same origin under `/api/...`
+  (`src/environments/environment.prod.ts`) — put a reverse proxy in front, or edit `apiUrl`.
+
+## 4. Credentials
+
+A seed user is created by the migrations:
+
+- **Username:** `rishabh`
+- **Password:** `password`
+
+Or register a new account from the **Create account** link on the login screen.
+
+## API overview
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/api/auth/register` | Create an account |
+| `POST` | `/api/auth/login` | Obtain a JWT |
+| `GET` | `/api/tasks?page&size&sort` | List your tasks (paginated) |
+| `GET` | `/api/tasks/{id}` | Get one of your tasks |
+| `POST` | `/api/tasks` | Create a task |
+| `PUT` | `/api/tasks/{id}` | Update a task |
+| `DELETE` | `/api/tasks/{id}` | Delete a task |
+| `GET` | `/api/tasks/search?keyword=` | Search your tasks |
+| `GET` | `/api/tasks/status/{status}` | Filter your tasks by status |
+
+All `/api/tasks/**` endpoints require a `Bearer` token and are scoped to the authenticated user.
+
+## Notes
+
+- Passwords are hashed with BCrypt.
+- The schema is owned by Flyway; Hibernate is set to `validate` so entities and schema can't
+  silently drift.
+- Frontend unit test specs (`*.spec.ts`) are scaffolding and may need module imports updated
+  before `npm test` passes; they are excluded from production builds.
 
 ## Contact
-For any questions or issues, please contact Rishabh Gupta
+
+**Rishabh Gupta**
+
+- LinkedIn: https://www.linkedin.com/in/rishabhgupta3107/
+- GitHub: https://github.com/rishabhgupta3107
+
+For any questions or issues, feel free to reach out.

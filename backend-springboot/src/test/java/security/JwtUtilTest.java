@@ -8,21 +8,18 @@ import com.rishabhgupta3107.taskmanagement.backend_springboot.security.JwtUtil;
 import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.test.util.ReflectionTestUtils;
 
 public class JwtUtilTest {
 
-  @Value("${jwt.secret}")
-  private String SECRET_KEY;
+  // Must be >= 256 bits for HS256.
+  private static final String TEST_SECRET =
+      "test-secret-key-that-is-long-enough-for-hs256-signing-0123456789";
 
   private JwtUtil jwtUtil;
 
   @BeforeEach
   public void setUp() {
-    jwtUtil = new JwtUtil();
-    String testSecretKey = "test-secret-key";
-    ReflectionTestUtils.setField(jwtUtil, "SECRET_KEY", testSecretKey);
+    jwtUtil = new JwtUtil(TEST_SECRET, 3_600_000L);
   }
 
   @Test
@@ -34,15 +31,13 @@ public class JwtUtilTest {
   @Test
   public void testValidateToken() {
     String token = jwtUtil.generateToken("john");
-    boolean isValid = jwtUtil.validateToken(token, "john");
-    assertTrue(isValid);
+    assertTrue(jwtUtil.validateToken(token, "john"));
   }
 
   @Test
   public void testExtractUsername() {
     String token = jwtUtil.generateToken("john");
-    String username = jwtUtil.extractUsername(token);
-    assertEquals("john", username);
+    assertEquals("john", jwtUtil.extractUsername(token));
   }
 
   @Test

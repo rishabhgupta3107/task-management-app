@@ -1,33 +1,48 @@
 <div class="login-container">
   <div class="login-card">
     <div class="login-icon">
-      <img src="assets/user-icon.png" alt="User Icon" class="user-icon">
-      <h2 class="login-title">Login</h2>
+      <img src="assets/user-icon.png" alt="" class="user-icon" aria-hidden="true">
+      <h1 class="login-title">Login</h1>
     </div>
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      <!-- Username Field -->
-      <div class="input-group">
-        <input type="text" placeholder="Username" formControlName="username" required>
-        <mat-error *ngIf="loginForm.controls['username']?.hasError('required') && loginForm.controls['username']?.touched">Username is required.</mat-error>
-      </div>
 
-      <!-- Password Field -->
-      <div class="input-group">
-        <input type="password" placeholder="Password" formControlName="password" required>
-        <mat-error *ngIf="loginForm.controls['password']?.hasError('required') && loginForm.controls['password']?.touched">Password is required.</mat-error>
-        <mat-error *ngIf="errorMessage">{{errorMessage}}</mat-error>
-      </div>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Username</mat-label>
+        <input matInput type="text" formControlName="username" autocomplete="username"
+               required aria-required="true">
+        <mat-error *ngIf="loginForm.controls['username'].hasError('required')">
+          Username is required.
+        </mat-error>
+      </mat-form-field>
 
-      <!-- Submit Button -->
-      <button type="submit" class="login-button">Login</button>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" formControlName="password" autocomplete="current-password"
+               required aria-required="true">
+        <mat-error *ngIf="loginForm.controls['password'].hasError('required')">
+          Password is required.
+        </mat-error>
+      </mat-form-field>
 
-      <!-- Social Links -->
+      <p class="form-error" role="alert" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+      <button mat-raised-button color="primary" type="submit" class="login-button"
+              [disabled]="submitting">
+        {{ submitting ? 'Signing in…' : 'Login' }}
+      </button>
+
+      <p class="register-link">
+        No account? <a routerLink="/register">Create one</a>
+      </p>
+
       <div class="social-links">
-        <a href="https://www.linkedin.com/in/rishabhgupta3107/" target="_blank">
-          <img src="assets/linkedin.png" alt="LinkedIn" class="social-icon">
+        <a href="https://www.linkedin.com/in/rishabhgupta3107/" target="_blank" rel="noopener"
+           aria-label="LinkedIn profile">
+          <img src="assets/linkedin.png" alt="" class="social-icon" aria-hidden="true">
         </a>
-        <a href="https://www.instagram.com/rishabh_gupta_/" target="_blank">
-          <img src="assets/instagram.png" alt="Instagram" class="social-icon">
+        <a href="https://www.instagram.com/rishabh_gupta_/" target="_blank" rel="noopener"
+           aria-label="Instagram profile">
+          <img src="assets/instagram.png" alt="" class="social-icon" aria-hidden="true">
         </a>
       </div>
     </form>

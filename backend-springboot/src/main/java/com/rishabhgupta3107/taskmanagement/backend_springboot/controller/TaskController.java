@@ -1,10 +1,17 @@
 package com.rishabhgupta3107.taskmanagement.backend_springboot.controller;
 
+import com.rishabhgupta3107.taskmanagement.backend_springboot.dto.TaskRequest;
+import com.rishabhgupta3107.taskmanagement.backend_springboot.dto.TaskResponse;
 import com.rishabhgupta3107.taskmanagement.backend_springboot.model.Task;
 import com.rishabhgupta3107.taskmanagement.backend_springboot.service.TaskService;
 import jakarta.validation.Valid;
+import java.security.Principal;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,48 +25,49 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/tasks")
+@RequiredArgsConstructor
 public class TaskController {
 
-  @Autowired private TaskService taskService;
+  private final TaskService taskService;
 
   @GetMapping
-  public List<Task> getAllTasks() {
-    return taskService.getAllTasks();
+  public Page<TaskResponse> getAllTasks(
+      Principal principal, @PageableDefault(size = 20) Pageable pageable) {
+    return taskService.getTasks(principal.getName(), pageable);
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Task> getTaskById(@PathVariable Long id) {
-    Task task = taskService.getTaskById(id);
-    return ResponseEntity.ok(task);
+  public ResponseEntity<TaskResponse> getTaskById(@PathVariable Long id, Principal principal) {
+    return ResponseEntity.ok(taskService.getTaskById(id, principal.getName()));
   }
 
   @PostMapping
-  public ResponseEntity<Task> createTask(@Valid @RequestBody Task task) {
-    Task createdTask = taskService.createTask(task);
-    return ResponseEntity.ok(createdTask);
+  public ResponseEntity<TaskResponse> createTask(
+      @Valid @RequestBody TaskRequest task, Principal principal) {
+    TaskResponse created = taskService.createTask(task, principal.getName());
+    return ResponseEntity.status(HttpStatus.CREATED).body(created);
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Task> updateTask(@PathVariable Long id, @Valid @RequestBody Task task) {
-    Task updatedTask = taskService.updateTask(id, task);
-    return ResponseEntity.ok(updatedTask);
+  public ResponseEntity<TaskResponse> updateTask(
+      @PathVariable Long id, @Valid @RequestBody TaskRequest task, Principal principal) {
+    return ResponseEntity.ok(taskService.updateTask(id, task, principal.getName()));
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
-    taskService.deleteTask(id);
+  public ResponseEntity<Void> deleteTask(@PathVariable Long id, Principal principal) {
+    taskService.deleteTask(id, principal.getName());
     return ResponseEntity.noContent().build();
   }
 
-  // Endpoint for getting tasks by status
   @GetMapping("/status/{status}")
-  public List<Task> getTasksByStatus(@PathVariable Task.Status status) {
-    return taskService.getTasksByStatus(status);
+  public List<TaskResponse> getTasksByStatus(
+      @PathVariable Task.Status status, Principal principal) {
+    return taskService.getTasksByStatus(principal.getName(), status);
   }
 
-  // Endpoint for searching tasks by keyword
   @GetMapping("/search")
-  public List<Task> searchTasks(@RequestParam String keyword) {
-    return taskService.searchTasks(keyword);
+  public List<TaskResponse> searchTasks(@RequestParam String keyword, Principal principal) {
+    return taskService.searchTasks(principal.getName(), keyword);
   }
 }
