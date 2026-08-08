@@ -103,7 +103,8 @@ export class WelcomeComponent implements AfterViewInit, OnDestroy {
   }
 
   private initSmoothScroll(): void {
-    this.lenis = new Lenis({ lerp: 0.09, wheelMultiplier: 1 });
+    // Snappier than the default: higher lerp = closer to native, bigger multipliers = faster travel.
+    this.lenis = new Lenis({ lerp: 0.14, wheelMultiplier: 1.6, touchMultiplier: 2 });
     this.lenis.on('scroll', ScrollTrigger.update);
     const raf = (time: number) => {
       this.lenis?.raf(time);
