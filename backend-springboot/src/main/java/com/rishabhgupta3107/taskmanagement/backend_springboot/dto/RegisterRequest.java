@@ -35,4 +35,7 @@ public class RegisterRequest {
 
   @Size(max = 500, message = "Avatar URL must be at most 500 characters.")
   private String avatarUrl;
+
+  /** Optional: the username of the manager this person reports to. */
+  private String managerUsername;
 }

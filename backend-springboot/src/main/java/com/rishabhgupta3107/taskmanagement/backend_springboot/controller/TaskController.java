@@ -36,6 +36,14 @@ public class TaskController {
     return taskService.getTasks(principal.getName(), pageable);
   }
 
+  @GetMapping("/member/{username}")
+  public Page<TaskResponse> getMemberTasks(
+      @PathVariable String username,
+      Principal principal,
+      @PageableDefault(size = 20) Pageable pageable) {
+    return taskService.getMemberTasks(principal.getName(), username, pageable);
+  }
+
   @GetMapping("/{id}")
   public ResponseEntity<TaskResponse> getTaskById(@PathVariable Long id, Principal principal) {
     return ResponseEntity.ok(taskService.getTaskById(id, principal.getName()));

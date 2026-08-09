@@ -18,6 +18,9 @@ export interface Task {
   subtasks?: Subtask[];
   createdAt?: string;
   updatedAt?: string;
+  creatorUsername?: string;
+  assigneeUsername?: string;
+  assigneeName?: string;
 }
 
 /** Mirrors Spring Data's Page<T> JSON shape (only the fields we use). */

@@ -15,6 +15,7 @@ import com.rishabhgupta3107.taskmanagement.backend_springboot.model.Task;
 import com.rishabhgupta3107.taskmanagement.backend_springboot.model.Users;
 import com.rishabhgupta3107.taskmanagement.backend_springboot.repository.TaskRepository;
 import com.rishabhgupta3107.taskmanagement.backend_springboot.repository.UsersRepository;
+import com.rishabhgupta3107.taskmanagement.backend_springboot.service.HierarchyService;
 import com.rishabhgupta3107.taskmanagement.backend_springboot.service.TaskService;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.Optional;
@@ -30,6 +31,7 @@ public class TaskServiceTest {
 
   @Mock private TaskRepository taskRepository;
   @Mock private UsersRepository usersRepository;
+  @Mock private HierarchyService hierarchy;
 
   @InjectMocks private TaskService taskService;
 
@@ -51,6 +53,7 @@ public class TaskServiceTest {
     task.setStatus(Task.Status.TO_DO);
     task.setPriority(Task.Priority.MEDIUM);
     task.setOwner(owner);
+    task.setAssignee(owner);
   }
 
   private TaskRequest sampleRequest() {
@@ -63,7 +66,7 @@ public class TaskServiceTest {
   }
 
   @Test
-  public void testCreateTaskAssignsOwner() {
+  public void testCreateTaskAssignsCreatorByDefault() {
     when(usersRepository.findByUsername(USERNAME)).thenReturn(Optional.of(owner));
     when(taskRepository.save(any(Task.class))).thenReturn(task);
 
@@ -75,8 +78,8 @@ public class TaskServiceTest {
   }
 
   @Test
-  public void testUpdateTaskWhenOwned() {
-    when(taskRepository.findByIdAndOwnerUsername(1L, USERNAME)).thenReturn(Optional.of(task));
+  public void testUpdateTaskWhenAssigned() {
+    when(taskRepository.findByIdAndAssigneeUsername(1L, USERNAME)).thenReturn(Optional.of(task));
     when(taskRepository.save(any(Task.class))).thenReturn(task);
 
     TaskResponse updated = taskService.updateTask(1L, sampleRequest(), USERNAME);
@@ -85,8 +88,8 @@ public class TaskServiceTest {
   }
 
   @Test
-  public void testUpdateTaskNotOwnedThrows() {
-    when(taskRepository.findByIdAndOwnerUsername(1L, USERNAME)).thenReturn(Optional.empty());
+  public void testUpdateTaskNotAssignedThrows() {
+    when(taskRepository.findByIdAndAssigneeUsername(1L, USERNAME)).thenReturn(Optional.empty());
 
     assertThrows(
         EntityNotFoundException.class, () -> taskService.updateTask(1L, sampleRequest(), USERNAME));
@@ -94,8 +97,8 @@ public class TaskServiceTest {
   }
 
   @Test
-  public void testDeleteTaskWhenOwned() {
-    when(taskRepository.findByIdAndOwnerUsername(1L, USERNAME)).thenReturn(Optional.of(task));
+  public void testDeleteTaskWhenAssigned() {
+    when(taskRepository.findByIdAndAssigneeUsername(1L, USERNAME)).thenReturn(Optional.of(task));
 
     taskService.deleteTask(1L, USERNAME);
 
@@ -104,9 +107,8 @@ public class TaskServiceTest {
 
   @Test
   public void testGetTaskByIdNotFoundThrows() {
-    when(taskRepository.findByIdAndOwnerUsername(99L, USERNAME)).thenReturn(Optional.empty());
+    when(taskRepository.findById(99L)).thenReturn(Optional.empty());
 
-    assertThrows(
-        EntityNotFoundException.class, () -> taskService.getTaskById(99L, USERNAME));
+    assertThrows(EntityNotFoundException.class, () -> taskService.getTaskById(99L, USERNAME));
   }
 }

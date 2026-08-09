@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { ConfirmService } from '../services/confirm.service';
+import { TeamService } from '../services/team.service';
 import { Task } from '../task';
+import { TeamMember } from '../models/user-profile';
 import { TASK_PRIORITIES, TASK_STATUSES } from '../task-constants';
 
 @Component({
@@ -10,16 +12,18 @@ import { TASK_PRIORITIES, TASK_STATUSES } from '../task-constants';
   templateUrl: './task-create-dialog.component.html',
   styleUrls: ['./task-create-dialog.component.css'],
 })
-export class TaskCreateDialogComponent {
+export class TaskCreateDialogComponent implements OnInit {
   readonly statuses = TASK_STATUSES;
   readonly priorities = TASK_PRIORITIES;
 
   taskForm: FormGroup;
+  reports: TeamMember[] = [];
 
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<TaskCreateDialogComponent, Task>,
-    private confirmService: ConfirmService
+    private confirmService: ConfirmService,
+    private teamService: TeamService
   ) {
     this.taskForm = this.fb.group({
       title: ['', [Validators.required, Validators.maxLength(100)]],
@@ -27,6 +31,15 @@ export class TaskCreateDialogComponent {
       status: ['', Validators.required],
       priority: ['', Validators.required],
       dueDate: [null, [Validators.required, futureDateValidator]],
+      assigneeUsername: [null],
+    });
+  }
+
+  ngOnInit(): void {
+    // Only managers/leads get reports back; workers get 403 and simply see no assignee picker.
+    this.teamService.getReports().subscribe({
+      next: (reports) => (this.reports = reports),
+      error: () => (this.reports = []),
     });
   }
 
@@ -35,8 +48,7 @@ export class TaskCreateDialogComponent {
       this.taskForm.markAllAsTouched();
       return;
     }
-
-    this.confirmService.confirm('Are you sure you want to create this task?').subscribe((confirmed) => {
+    this.confirmService.confirm('Create this task?').subscribe((confirmed) => {
       if (confirmed) {
         this.dialogRef.close(toTask(this.taskForm.value));
       }
@@ -49,9 +61,7 @@ export class TaskCreateDialogComponent {
 }
 
 function futureDateValidator(control: AbstractControl): ValidationErrors | null {
-  if (!control.value) {
-    return null;
-  }
+  if (!control.value) return null;
   const selected = new Date(control.value);
   const today = new Date();
   selected.setHours(0, 0, 0, 0);
@@ -65,6 +75,7 @@ function toTask(value: {
   status: Task['status'];
   priority: Task['priority'];
   dueDate: Date;
+  assigneeUsername: string | null;
 }): Task {
   return {
     title: value.title,
@@ -72,11 +83,11 @@ function toTask(value: {
     status: value.status,
     priority: value.priority,
     dueDate: toIsoDate(value.dueDate),
+    assigneeUsername: value.assigneeUsername || undefined,
   };
 }
 
 function toIsoDate(date: Date): string {
-  // Local date -> 'yyyy-MM-dd' without timezone shift.
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');

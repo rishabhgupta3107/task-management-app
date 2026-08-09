@@ -4,6 +4,7 @@ import com.rishabhgupta3107.taskmanagement.backend_springboot.dto.RegisterReques
 import com.rishabhgupta3107.taskmanagement.backend_springboot.dto.UpdateProfileRequest;
 import com.rishabhgupta3107.taskmanagement.backend_springboot.dto.UserProfileResponse;
 import com.rishabhgupta3107.taskmanagement.backend_springboot.exception.DuplicateUsernameException;
+import com.rishabhgupta3107.taskmanagement.backend_springboot.model.OrgRole;
 import com.rishabhgupta3107.taskmanagement.backend_springboot.model.Users;
 import com.rishabhgupta3107.taskmanagement.backend_springboot.repository.UsersRepository;
 import java.time.LocalDate;
@@ -32,10 +33,20 @@ public class UserService {
     user.setUsername(request.getUsername());
     user.setPassword(passwordEncoder.encode(request.getPassword()));
     user.setRole("ROLE_USER");
+    user.setOrgRole(OrgRole.WORKER);
     user.setFullName(request.getFullName());
     user.setEmail(request.getEmail());
     user.setDob(request.getDob());
     user.setAvatarUrl(request.getAvatarUrl());
+
+    if (request.getManagerUsername() != null && !request.getManagerUsername().isBlank()) {
+      Users manager =
+          usersRepository
+              .findByUsername(request.getManagerUsername())
+              .orElseThrow(
+                  () -> new UsernameNotFoundException("Manager not found: " + request.getManagerUsername()));
+      user.setManager(manager);
+    }
     usersRepository.save(user);
   }
 
@@ -75,6 +86,14 @@ public class UserService {
     response.setBio(user.getBio());
     response.setTimezone(user.getTimezone());
     response.setCreatedAt(user.getCreatedAt());
+
+    OrgRole orgRole = user.getOrgRole() != null ? user.getOrgRole() : OrgRole.WORKER;
+    response.setOrgRole(orgRole);
+    response.setCanManageTeam(orgRole.canManageTeam());
+    if (user.getManager() != null) {
+      response.setManagerUsername(user.getManager().getUsername());
+      response.setManagerName(user.getManager().getFullName());
+    }
     return response;
   }
 

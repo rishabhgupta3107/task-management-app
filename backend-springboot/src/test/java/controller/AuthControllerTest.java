@@ -12,6 +12,7 @@ import com.rishabhgupta3107.taskmanagement.backend_springboot.dto.RegisterReques
 import com.rishabhgupta3107.taskmanagement.backend_springboot.security.AuthenticationRequest;
 import com.rishabhgupta3107.taskmanagement.backend_springboot.security.AuthenticationResponse;
 import com.rishabhgupta3107.taskmanagement.backend_springboot.security.JwtUtil;
+import com.rishabhgupta3107.taskmanagement.backend_springboot.service.TeamService;
 import com.rishabhgupta3107.taskmanagement.backend_springboot.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,7 @@ public class AuthControllerTest {
   @Mock private AuthenticationManager authenticationManager;
   @Mock private JwtUtil jwtUtil;
   @Mock private UserService userService;
+  @Mock private TeamService teamService;
 
   @InjectMocks private AuthController authController;
 

@@ -35,8 +35,9 @@ import { ShellComponent } from './shell/shell.component';
 import { FocusComponent } from './focus/focus.component';
 import { AnalyticsComponent } from './analytics/analytics.component';
 import { ProfileComponent } from './profile/profile.component';
+import { TeamComponent } from './team/team.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import { MatNativeDateModule } from '@angular/material/core';
     FocusComponent,
     AnalyticsComponent,
     ProfileComponent,
+    TeamComponent,
   ],
   imports: [
     HttpClientModule,
@@ -83,6 +85,8 @@ import { MatNativeDateModule } from '@angular/material/core';
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true },
+    // en-GB gives a DD/MM/YYYY datepicker input format.
+    { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
   ],
   bootstrap: [AppComponent],
 })

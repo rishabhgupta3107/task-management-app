@@ -21,6 +21,10 @@ do next. It bridges the gaps common to task apps:
 - **Rich tasks** — subtasks with a progress bar, tags, and a created/updated activity timeline.
 - **Full profiles** — name, email, date of birth → auto-calculated age, title, bio, timezone, and a
   generated gradient avatar (or your own image URL). Registration collects the essentials.
+- **Roles & teams (RBAC)** — a 3-tier hierarchy (Manager › Team Lead › Worker). Managers and leads
+  see everyone below them, can add members and change designations from a **Team** page, and can
+  **create & assign** tasks down to their reports. Tasks have a creator and an assignee; your board
+  shows what's assigned to you. At registration you can pick who you report to.
 
 ### Experience
 
@@ -143,8 +147,13 @@ Or register a new account from the **Create account** link on the login screen.
 |--------|------|-------------|
 | `POST` | `/api/auth/register` | Create an account (optional name, email, DOB, avatar) |
 | `POST` | `/api/auth/login` | Obtain a JWT |
-| `GET` | `/api/users/me` | Get the authenticated user's profile (age derived from DOB) |
+| `GET` | `/api/auth/managers` | Public list of users for the registration "reports to" picker |
+| `GET` | `/api/users/me` | Get the authenticated user's profile (age derived from DOB, role, manager) |
 | `PUT` | `/api/users/me` | Update profile (name, email, DOB, avatar URL, title, bio, timezone) |
+| `GET` | `/api/team` | Your reporting tree (managers/leads only) |
+| `POST` | `/api/team/members` | Add a user to your team |
+| `PUT` | `/api/team/members/{username}` | Change a member's designation or who they report to |
+| `GET` | `/api/tasks/member/{username}` | View a report's tasks (read-only, managers/leads) |
 | `GET` | `/api/tasks?page&size&sort` | List your tasks (paginated) |
 | `GET` | `/api/tasks/{id}` | Get one of your tasks |
 | `POST` | `/api/tasks` | Create a task |

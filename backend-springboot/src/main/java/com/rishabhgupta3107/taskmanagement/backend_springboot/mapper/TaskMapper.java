@@ -26,6 +26,13 @@ public final class TaskMapper {
     response.setSubtasks(toSubtaskDtos(task.getSubtasks()));
     response.setCreatedAt(task.getCreatedAt());
     response.setUpdatedAt(task.getUpdatedAt());
+    if (task.getOwner() != null) {
+      response.setCreatorUsername(task.getOwner().getUsername());
+    }
+    if (task.getAssignee() != null) {
+      response.setAssigneeUsername(task.getAssignee().getUsername());
+      response.setAssigneeName(task.getAssignee().getFullName());
+    }
     return response;
   }
 

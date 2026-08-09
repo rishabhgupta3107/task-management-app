@@ -11,6 +11,7 @@ import { TaskListComponent } from './task-list/task-list.component';
 import { FocusComponent } from './focus/focus.component';
 import { AnalyticsComponent } from './analytics/analytics.component';
 import { ProfileComponent } from './profile/profile.component';
+import { TeamComponent } from './team/team.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/welcome', pathMatch: 'full' },
@@ -27,6 +28,7 @@ const routes: Routes = [
       { path: 'focus', component: FocusComponent },
       { path: 'board', component: TaskListComponent },
       { path: 'analytics', component: AnalyticsComponent },
+      { path: 'team', component: TeamComponent },
       { path: 'profile', component: ProfileComponent },
       { path: 'tasks/:id', component: TaskDetailComponent },
     ],

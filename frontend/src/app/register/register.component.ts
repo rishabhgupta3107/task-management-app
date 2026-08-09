@@ -1,21 +1,25 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
+import { TeamService } from '../services/team.service';
+import { ManagerOption } from '../models/user-profile';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrl: './register.component.css',
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
   errorMessage = '';
   submitting = false;
+  managers: ManagerOption[] = [];
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
+    private teamService: TeamService,
     private router: Router
   ) {
     this.registerForm = this.fb.group({
@@ -24,6 +28,14 @@ export class RegisterComponent {
       email: ['', [Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(72)]],
       dob: [null],
+      managerUsername: [null],
+    });
+  }
+
+  ngOnInit(): void {
+    this.teamService.managers().subscribe({
+      next: (m) => (this.managers = m),
+      error: () => (this.managers = []),
     });
   }
 
@@ -44,6 +56,7 @@ export class RegisterComponent {
         fullName: v.fullName || undefined,
         email: v.email || undefined,
         dob: v.dob ? this.toIso(v.dob) : undefined,
+        managerUsername: v.managerUsername || undefined,
       })
       .subscribe({
         next: () => this.router.navigate(['/login']),

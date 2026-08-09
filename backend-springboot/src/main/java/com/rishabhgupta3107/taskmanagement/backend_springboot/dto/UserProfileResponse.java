@@ -1,6 +1,7 @@
 package com.rishabhgupta3107.taskmanagement.backend_springboot.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.rishabhgupta3107.taskmanagement.backend_springboot.model.OrgRole;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Getter;
@@ -26,4 +27,9 @@ public class UserProfileResponse {
   private String bio;
   private String timezone;
   private LocalDateTime createdAt;
+
+  private OrgRole orgRole;
+  private String managerUsername;
+  private String managerName;
+  private boolean canManageTeam;
 }

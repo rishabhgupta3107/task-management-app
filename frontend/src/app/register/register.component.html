@@ -41,7 +41,17 @@
           <mat-datepicker #dp></mat-datepicker>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="span-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Reports to (optional)</mat-label>
+          <mat-select formControlName="managerUsername">
+            <mat-option [value]="null">— None —</mat-option>
+            <mat-option *ngFor="let m of managers" [value]="m.username">
+              {{ m.fullName || m.username }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
           <mat-label>Password</mat-label>
           <input matInput type="password" formControlName="password" autocomplete="new-password" required>
           <mat-error *ngIf="registerForm.controls['password'].hasError('required')">Password is required.</mat-error>

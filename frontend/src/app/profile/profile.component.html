@@ -17,6 +17,8 @@
 
   <!-- Read-only facts -->
   <div class="facts" *ngIf="!editing">
+    <div class="fact card"><span class="fk mono">ROLE</span><span class="fv">{{ roleLabel(profile.orgRole) }}</span></div>
+    <div class="fact card"><span class="fk mono">REPORTS TO</span><span class="fv">{{ profile.managerName || profile.managerUsername || '—' }}</span></div>
     <div class="fact card"><span class="fk mono">EMAIL</span><span class="fv">{{ profile.email || '—' }}</span></div>
     <div class="fact card"><span class="fk mono">AGE</span><span class="fv">{{ profile.age != null ? profile.age + ' yrs' : '—' }}</span></div>
     <div class="fact card"><span class="fk mono">DATE OF BIRTH</span><span class="fv">{{ profile.dob || '—' }}</span></div>
@@ -49,7 +51,9 @@
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>Timezone</mat-label>
-        <input matInput formControlName="timezone" placeholder="e.g. Asia/Kolkata">
+        <mat-select formControlName="timezone">
+          <mat-option *ngFor="let tz of timezoneOptions" [value]="tz">{{ tz }}</mat-option>
+        </mat-select>
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>Avatar image URL</mat-label>

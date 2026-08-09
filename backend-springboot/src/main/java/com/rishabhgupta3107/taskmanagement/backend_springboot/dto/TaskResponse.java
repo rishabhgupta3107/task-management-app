@@ -29,4 +29,8 @@ public class TaskResponse {
   private List<SubtaskDto> subtasks = new ArrayList<>();
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
+
+  private String creatorUsername;
+  private String assigneeUsername;
+  private String assigneeName;
 }

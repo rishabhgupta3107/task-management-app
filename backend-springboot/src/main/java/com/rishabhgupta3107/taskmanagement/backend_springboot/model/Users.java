@@ -2,14 +2,21 @@ package com.rishabhgupta3107.taskmanagement.backend_springboot.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
@@ -31,6 +38,17 @@ public class Users {
 
   @Column(nullable = false)
   private String role = "ROLE_USER";
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "org_role", nullable = false)
+  private OrgRole orgRole = OrgRole.WORKER;
+
+  /** The user this person reports to (null for the top of the tree). */
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "manager_id")
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
+  private Users manager;
 
   // ----- Profile -----
   @Column(name = "full_name", length = 100)

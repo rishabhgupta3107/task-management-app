@@ -1,0 +1,85 @@
+<div class="team">
+  <div class="head">
+    <div>
+      <span class="eyebrow mono">TEAM</span>
+      <h1>Your team</h1>
+    </div>
+  </div>
+
+  <!-- No permission -->
+  <div class="notice card" *ngIf="!loading && !canManage">
+    <mat-icon>lock</mat-icon>
+    <p>You need a Manager or Team Lead role to manage a team.</p>
+  </div>
+
+  <ng-container *ngIf="canManage">
+    <!-- Add member -->
+    <div class="add card">
+      <mat-icon>person_add</mat-icon>
+      <input type="text" [(ngModel)]="newMember" placeholder="Add a member by username…"
+             (keyup.enter)="addMember()" aria-label="Username to add">
+      <button class="btn btn-primary" (click)="addMember()">Add to team</button>
+      <span class="add-error" *ngIf="addError">{{ addError }}</span>
+    </div>
+
+    <!-- Members -->
+    <div class="members card">
+      <div class="m-head mono">
+        <span>MEMBER</span><span>DESIGNATION</span><span>REPORTS TO</span><span>ACTIVE</span><span></span>
+      </div>
+
+      <ng-container *ngFor="let m of members">
+        <div class="m-row">
+          <div class="m-who">
+            <app-avatar [username]="m.username" [name]="m.fullName" [imageUrl]="m.avatarUrl" [size]="34"></app-avatar>
+            <div class="m-meta">
+              <span class="m-name">{{ m.fullName || m.username }}</span>
+              <span class="m-user mono">&#64;{{ m.username }}</span>
+            </div>
+          </div>
+
+          <div class="m-role">
+            <select [value]="m.orgRole" (change)="changeRole(m, $any($event.target).value)">
+              <option *ngFor="let r of roles" [value]="r">{{ label(r) }}</option>
+            </select>
+          </div>
+
+          <div class="m-manager">
+            <select [value]="m.managerUsername || myUsername"
+                    (change)="changeManager(m, $any($event.target).value)">
+              <option *ngFor="let opt of managerOptions" [value]="opt.username"
+                      [disabled]="opt.username === m.username">{{ opt.label }}</option>
+            </select>
+          </div>
+
+          <div class="m-active mono">{{ m.activeTasks }}</div>
+
+          <div class="m-actions">
+            <button class="btn btn-ghost" (click)="toggleTasks(m)">
+              {{ expanded === m.username ? 'Hide' : 'View tasks' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Expanded tasks -->
+        <div class="m-tasks" *ngIf="expanded === m.username">
+          <div class="mt-loading mono" *ngIf="tasksLoading">Loading…</div>
+          <div class="mt-empty mono" *ngIf="!tasksLoading && memberTasks.length === 0">No tasks assigned.</div>
+          <div class="mt-row" *ngFor="let t of memberTasks">
+            <span class="chip s-{{ t.status | lowercase }}"><span class="dot"></span>{{ t.status }}</span>
+            <span class="mt-title">{{ t.title }}</span>
+            <span class="chip p-{{ t.priority | lowercase }}">{{ t.priority }}</span>
+            <span class="mt-due mono">{{ t.dueDate || '—' }}</span>
+          </div>
+        </div>
+      </ng-container>
+
+      <div class="m-empty" *ngIf="members.length === 0">
+        <mat-icon>groups</mat-icon>
+        <p>No team members yet. Add someone by username above.</p>
+      </div>
+    </div>
+  </ng-container>
+
+  <div class="loading mono" *ngIf="loading">Loading team…</div>
+</div>

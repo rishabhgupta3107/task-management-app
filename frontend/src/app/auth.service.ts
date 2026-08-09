@@ -11,6 +11,7 @@ export interface RegisterPayload {
   email?: string;
   dob?: string;
   avatarUrl?: string;
+  managerUsername?: string;
 }
 
 @Injectable({

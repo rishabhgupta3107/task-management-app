@@ -39,4 +39,7 @@ public class TaskRequest {
   private Set<String> tags = new LinkedHashSet<>();
 
   @Valid private List<SubtaskDto> subtasks = new ArrayList<>();
+
+  /** Optional: assign to a report (must be within your team). Defaults to the creator. */
+  private String assigneeUsername;
 }

@@ -11,17 +11,17 @@
         <mat-icon>{{ item.icon }}</mat-icon>
         <span class="nav-label">{{ item.label }}</span>
       </a>
+      <a *ngIf="profile()?.canManageTeam" class="nav-item" routerLink="/app/team"
+         routerLinkActive="active" (click)="navOpen.set(false)">
+        <mat-icon>groups</mat-icon>
+        <span class="nav-label">Team</span>
+      </a>
     </nav>
 
-    <a class="profile-chip" routerLink="/app/profile" routerLinkActive="active"
-       (click)="navOpen.set(false)">
-      <app-avatar [username]="profile()?.username || ''" [name]="profile()?.fullName"
-                  [imageUrl]="profile()?.avatarUrl" [size]="34"></app-avatar>
-      <span class="profile-meta">
-        <span class="profile-name">{{ profile()?.fullName || profile()?.username || '—' }}</span>
-        <span class="profile-role mono">{{ profile()?.title || 'Operator' }}</span>
-      </span>
-    </a>
+    <!-- New task lives at the bottom of the sidebar -->
+    <button class="btn btn-primary sidebar-newtask" (click)="newTask(); navOpen.set(false)">
+      <mat-icon>add</mat-icon><span>New task</span>
+    </button>
   </aside>
 
   <!-- Main -->
@@ -36,9 +36,14 @@
       </div>
       <div class="spacer"></div>
       <app-theme-toggle></app-theme-toggle>
-      <button class="btn btn-primary new-btn" (click)="newTask()">
-        <mat-icon>add</mat-icon><span>New task</span>
-      </button>
+
+      <!-- My profile lives at the top -->
+      <a class="profile-btn" routerLink="/app/profile" routerLinkActive="active">
+        <app-avatar [username]="profile()?.username || ''" [name]="profile()?.fullName"
+                    [imageUrl]="profile()?.avatarUrl" [size]="30"></app-avatar>
+        <span class="profile-btn-name">{{ profile()?.fullName || profile()?.username || 'Profile' }}</span>
+      </a>
+
       <button class="btn btn-ghost icon-btn" (click)="logout()" aria-label="Sign out" title="Sign out">
         <mat-icon>logout</mat-icon>
       </button>

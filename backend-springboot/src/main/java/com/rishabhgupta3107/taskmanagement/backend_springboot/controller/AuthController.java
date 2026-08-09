@@ -1,16 +1,20 @@
 package com.rishabhgupta3107.taskmanagement.backend_springboot.controller;
 
+import com.rishabhgupta3107.taskmanagement.backend_springboot.dto.ManagerOption;
 import com.rishabhgupta3107.taskmanagement.backend_springboot.dto.RegisterRequest;
 import com.rishabhgupta3107.taskmanagement.backend_springboot.security.AuthenticationRequest;
 import com.rishabhgupta3107.taskmanagement.backend_springboot.security.AuthenticationResponse;
 import com.rishabhgupta3107.taskmanagement.backend_springboot.security.JwtUtil;
+import com.rishabhgupta3107.taskmanagement.backend_springboot.service.TeamService;
 import com.rishabhgupta3107.taskmanagement.backend_springboot.service.UserService;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +28,7 @@ public class AuthController {
   private final AuthenticationManager authenticationManager;
   private final JwtUtil jwtUtil;
   private final UserService userService;
+  private final TeamService teamService;
 
   @PostMapping("/login")
   public ResponseEntity<AuthenticationResponse> login(
@@ -40,5 +45,11 @@ public class AuthController {
   public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequest request) {
     userService.register(request);
     return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
+  /** Public list of users to populate the registration "reports to" picker. */
+  @GetMapping("/managers")
+  public List<ManagerOption> managers() {
+    return teamService.listManagers();
   }
 }

@@ -67,9 +67,15 @@ public class Task {
   @Column(name = "updated_at")
   private LocalDateTime updatedAt;
 
+  /** The creator of the task. */
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "user_id", nullable = false)
   private Users owner;
+
+  /** The person responsible for executing the task (defaults to the creator). */
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "assignee_id", nullable = false)
+  private Users assignee;
 
   public enum Status {
     TO_DO("TO_DO"),
