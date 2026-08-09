@@ -1,4 +1,9 @@
-<h2 mat-dialog-title class="header">Create Task</h2>
+<div class="dialog-header">
+  <h2 mat-dialog-title class="header">Create Task</h2>
+  <button type="button" class="close-btn" (click)="cancel()" aria-label="Close">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
 <mat-dialog-content class="content">
   <form [formGroup]="taskForm" (ngSubmit)="submit()" novalidate>
     <mat-form-field appearance="outline" class="form-field">
