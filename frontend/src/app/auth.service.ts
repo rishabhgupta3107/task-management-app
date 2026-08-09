@@ -4,6 +4,15 @@ import { Router } from '@angular/router';
 import { map, Observable } from 'rxjs';
 import { environment } from '../environments/environment';
 
+export interface RegisterPayload {
+  username: string;
+  password: string;
+  fullName?: string;
+  email?: string;
+  dob?: string;
+  avatarUrl?: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -19,8 +28,8 @@ export class AuthService {
       .pipe(map((response) => localStorage.setItem(this.tokenKey, response.jwt)));
   }
 
-  register(username: string, password: string): Observable<void> {
-    return this.http.post<void>(`${this.baseUrl}/register`, { username, password });
+  register(payload: RegisterPayload): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/register`, payload);
   }
 
   logout(): void {
@@ -46,7 +55,6 @@ export class AuthService {
       }
       return payload.exp * 1000 <= Date.now();
     } catch {
-      // A token we can't parse is treated as invalid.
       return true;
     }
   }

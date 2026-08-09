@@ -29,7 +29,13 @@ import { TaskCreateDialogComponent } from './task-create-dialog/task-create-dial
 import { RegisterComponent } from './register/register.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { ThemeToggleComponent } from './shared/theme-toggle.component';
+import { AvatarComponent } from './shared/avatar.component';
 import { CommandPaletteComponent } from './command-palette/command-palette.component';
+import { ShellComponent } from './shell/shell.component';
+import { FocusComponent } from './focus/focus.component';
+import { AnalyticsComponent } from './analytics/analytics.component';
+import { ProfileComponent } from './profile/profile.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
@@ -44,7 +50,12 @@ import { MatNativeDateModule } from '@angular/material/core';
     TaskCreateDialogComponent,
     WelcomeComponent,
     ThemeToggleComponent,
+    AvatarComponent,
     CommandPaletteComponent,
+    ShellComponent,
+    FocusComponent,
+    AnalyticsComponent,
+    ProfileComponent,
   ],
   imports: [
     HttpClientModule,
@@ -64,6 +75,7 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatSortModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
+    DragDropModule,
     MatInputModule,
     MatButtonModule,
     MatIconModule,

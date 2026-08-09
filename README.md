@@ -7,17 +7,32 @@ It's built on a **Spring Boot** backend and an **Angular 17** frontend, with JWT
 self-service registration, and per-user task CRUD (server-side pagination, search, filtering).
 Each user only ever sees their own tasks.
 
+### What HELM does
+
+HELM isn't a passive list — it turns your tasks into an *operating picture* and tells you what to
+do next. It bridges the gaps common to task apps:
+
+- **Focus view** — an urgency engine scores every task from priority + due date and surfaces
+  Overdue / Due today / At-risk / Upcoming, with a "do this next" hero. (Fixes "apps are just lists.")
+- **Kanban board** — drag tasks across To do / In progress / Done; status persists on drop. Toggle
+  to a dense sortable list view.
+- **Analytics** — throughput (created vs. completed over 14 days), status mix, priority breakdown,
+  completion rate and overdue KPIs, rendered with Chart.js in both themes.
+- **Rich tasks** — subtasks with a progress bar, tags, and a created/updated activity timeline.
+- **Full profiles** — name, email, date of birth → auto-calculated age, title, bio, timezone, and a
+  generated gradient avatar (or your own image URL). Registration collects the essentials.
+
 ### Experience
 
-- **Scroll-driven landing page** (`/welcome`) with a GSAP + Lenis motion showpiece — an orbiting
-  ring of task cards that rotates as you scroll.
-- **Dark "terminal" + light themes** with an animated toggle (persisted per user).
-- **⌘K command palette** — create tasks, jump around, toggle theme, or sign out from anywhere.
-- **Terminal-grade board** with status/priority chips, sortable columns, and animated rows.
-- Polished micro-interactions and route transitions throughout; respects
-  `prefers-reduced-motion`.
+- **Scroll-driven landing page** (`/welcome`) — GSAP + Lenis showpiece with an orbiting ring of task
+  cards that rotates as you scroll. Tagline: *"Stop tracking tasks. Start commanding them."*
+- **Dark "terminal" + light themes** with an animated toggle (persisted per user), carried
+  consistently across the whole authenticated app (sidebar shell, board, focus, analytics, profile).
+- **⌘K command palette** — jump to any view, create a task, toggle theme, or sign out from anywhere.
+- Polished micro-interactions and route transitions; respects `prefers-reduced-motion`.
 
-Tech: Angular 17, Angular Material (themed), GSAP + ScrollTrigger, Lenis smooth scroll.
+Tech: Angular 17, Angular Material (themed), Angular CDK drag-drop, GSAP + ScrollTrigger, Lenis
+smooth scroll, Chart.js.
 
 ## Architecture
 
@@ -126,8 +141,10 @@ Or register a new account from the **Create account** link on the login screen.
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `POST` | `/api/auth/register` | Create an account |
+| `POST` | `/api/auth/register` | Create an account (optional name, email, DOB, avatar) |
 | `POST` | `/api/auth/login` | Obtain a JWT |
+| `GET` | `/api/users/me` | Get the authenticated user's profile (age derived from DOB) |
+| `PUT` | `/api/users/me` | Update profile (name, email, DOB, avatar URL, title, bio, timezone) |
 | `GET` | `/api/tasks?page&size&sort` | List your tasks (paginated) |
 | `GET` | `/api/tasks/{id}` | Get one of your tasks |
 | `POST` | `/api/tasks` | Create a task |

@@ -1,0 +1,66 @@
+<div class="focus">
+  <div class="head">
+    <div>
+      <span class="eyebrow mono">FOCUS</span>
+      <h1>What's next</h1>
+    </div>
+    <div class="head-stats mono">
+      <span class="hs"><b>{{ activeCount }}</b> active</span>
+      <span class="hs"><b>{{ completedToday }}</b> done</span>
+    </div>
+  </div>
+
+  <!-- Hero: the single highest-urgency task -->
+  <div class="hero card" *ngIf="hero" (click)="open(hero)">
+    <div class="hero-glow"></div>
+    <div class="hero-left">
+      <span class="hero-eyebrow mono">DO THIS NEXT</span>
+      <h2>{{ hero.title }}</h2>
+      <p class="hero-desc">{{ hero.description }}</p>
+      <div class="hero-chips">
+        <span class="chip s-{{ hero.status | lowercase }}"><span class="dot"></span>{{ hero.status }}</span>
+        <span class="chip p-{{ hero.priority | lowercase }}">{{ hero.priority }}</span>
+        <span class="chip">{{ due(hero) }}</span>
+        <span class="chip" *ngFor="let tag of hero.tags">#{{ tag }}</span>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="gauge" [style.--v.deg]="score(hero) * 3.6 + 'deg'">
+        <span class="gauge-val mono">{{ score(hero) }}</span>
+        <span class="gauge-label mono">URGENCY</span>
+      </div>
+      <button class="btn btn-primary" (click)="complete(hero, $event)">
+        <mat-icon>check</mat-icon> Mark done
+      </button>
+    </div>
+  </div>
+
+  <!-- Urgency groups -->
+  <div class="groups" *ngIf="!loading">
+    <section class="group" *ngFor="let g of groups">
+      <div class="group-head">
+        <span class="group-dot tone-{{ g.tone }}"></span>
+        <h3>{{ g.label }}</h3>
+        <span class="group-count mono">{{ g.tasks.length }}</span>
+      </div>
+      <div class="rows">
+        <div class="row" *ngFor="let t of g.tasks" (click)="open(t)">
+          <button class="check" (click)="complete(t, $event)" aria-label="Mark done">
+            <mat-icon>radio_button_unchecked</mat-icon>
+          </button>
+          <span class="row-title">{{ t.title }}</span>
+          <span class="chip p-{{ t.priority | lowercase }}">{{ t.priority }}</span>
+          <span class="row-due mono" [class.overdue]="g.key === 'OVERDUE'">{{ due(t) }}</span>
+          <span class="row-score mono">{{ score(t) }}</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="empty" *ngIf="groups.length === 0">
+      <mat-icon>task_alt</mat-icon>
+      <p>You're all caught up. Nothing needs attention right now.</p>
+    </div>
+  </div>
+
+  <div class="loading mono" *ngIf="loading">Loading your operating picture…</div>
+</div>

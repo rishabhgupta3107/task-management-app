@@ -1,0 +1,36 @@
+:host { display: block; }
+.analytics { animation: fade-up var(--dur-3) var(--ease) both; }
+
+.head { margin-bottom: 22px; }
+.eyebrow { font-size: 11px; letter-spacing: 0.28em; color: var(--accent); }
+.head h1 { font-size: 30px; letter-spacing: -0.03em; color: var(--text); margin-top: 6px; }
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.kpi { padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; }
+.kpi-label { font-size: 10px; letter-spacing: 0.12em; color: var(--text-faint); }
+.kpi-value { font-size: 34px; font-weight: 700; color: var(--text); line-height: 1; }
+.kpi-value i { font-size: 18px; font-style: normal; color: var(--text-muted); }
+.kpi.danger .kpi-value { color: var(--prio-high); }
+
+.charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.chart-card { padding: 20px; }
+.chart-card.wide { grid-column: 1 / -1; }
+.chart-card h3 { font-size: 14px; color: var(--text); margin-bottom: 16px; }
+.canvas-wrap { position: relative; height: 240px; }
+.canvas-wrap.tall { height: 300px; }
+
+.loading { padding: 60px; text-align: center; color: var(--text-faint); }
+
+@media (max-width: 760px) {
+  .kpis { grid-template-columns: repeat(2, 1fr); }
+  .charts { grid-template-columns: 1fr; }
+}

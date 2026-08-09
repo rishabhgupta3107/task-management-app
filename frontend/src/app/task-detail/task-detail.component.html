@@ -1,70 +1,120 @@
 <div class="detail">
-  <div class="detail-grid" aria-hidden="true"></div>
-
   <header class="detail-top">
     <button class="btn btn-ghost back" type="button" (click)="navigateBack()">
       <mat-icon>arrow_back</mat-icon> Board
     </button>
     <span class="detail-id mono" *ngIf="taskId !== null">TASK #{{ taskId }}</span>
-    <app-theme-toggle></app-theme-toggle>
   </header>
 
-  <div class="detail-card card">
-    <div class="detail-head">
+  <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" novalidate class="detail-grid">
+    <!-- Main -->
+    <div class="main-card card">
       <span class="eyebrow mono">EDIT TASK</span>
-      <h1>Task details</h1>
+
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Title</mat-label>
+        <input matInput formControlName="title">
+        <mat-error *ngIf="taskForm.controls['title'].hasError('required')">Title is required.</mat-error>
+        <mat-error *ngIf="taskForm.controls['title'].hasError('maxlength')">Max 100 characters.</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Description</mat-label>
+        <textarea matInput rows="5" formControlName="description"></textarea>
+        <mat-error *ngIf="taskForm.controls['description'].hasError('required')">Description is required.</mat-error>
+        <mat-error *ngIf="taskForm.controls['description'].hasError('maxlength')">Max 1000 characters.</mat-error>
+      </mat-form-field>
+
+      <!-- Subtasks -->
+      <div class="subtasks">
+        <div class="sub-head">
+          <span class="section-label mono">SUBTASKS</span>
+          <span class="sub-progress mono" *ngIf="subtasks.length">{{ subtaskProgress }}%</span>
+        </div>
+        <div class="progress-bar" *ngIf="subtasks.length">
+          <span [style.width.%]="subtaskProgress"></span>
+        </div>
+        <div class="sub-list">
+          <div class="sub-item" *ngFor="let s of subtasks; let i = index">
+            <button type="button" class="sub-check" [class.done]="s.done" (click)="toggleSubtask(s)">
+              <mat-icon>{{ s.done ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+            </button>
+            <span class="sub-title" [class.done]="s.done">{{ s.title }}</span>
+            <button type="button" class="sub-del" (click)="removeSubtask(i)"><mat-icon>close</mat-icon></button>
+          </div>
+        </div>
+        <div class="sub-add">
+          <input type="text" [(ngModel)]="newSubtask" [ngModelOptions]="{standalone: true}"
+                 placeholder="Add a subtask…" (keyup.enter)="addSubtask()">
+          <button type="button" class="btn btn-ghost" (click)="addSubtask()"><mat-icon>add</mat-icon></button>
+        </div>
+      </div>
     </div>
 
-    <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" novalidate>
-      <div class="grid-2">
-        <mat-form-field appearance="outline">
-          <mat-label>Title</mat-label>
-          <input matInput formControlName="title" placeholder="Enter task title">
-          <mat-error *ngIf="taskForm.controls['title'].hasError('required')">Title is required.</mat-error>
-          <mat-error *ngIf="taskForm.controls['title'].hasError('maxlength')">Title cannot exceed 100 characters.</mat-error>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
+    <!-- Side -->
+    <div class="side">
+      <div class="card side-card">
+        <div class="grid-2">
+          <mat-form-field appearance="outline">
+            <mat-label>Status</mat-label>
+            <mat-select formControlName="status">
+              <mat-option *ngFor="let s of statuses" [value]="s">{{ s }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Priority</mat-label>
+            <mat-select formControlName="priority">
+              <mat-option *ngFor="let p of priorities" [value]="p">{{ p }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <mat-form-field appearance="outline" class="full">
           <mat-label>Due date</mat-label>
-          <input matInput [matDatepicker]="picker" formControlName="dueDate" placeholder="Pick a due date">
+          <input matInput [matDatepicker]="picker" formControlName="dueDate">
           <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
           <mat-error *ngIf="dueDate?.hasError('required')">Due date is required.</mat-error>
-          <mat-error *ngIf="dueDate?.hasError('invalidDate')">Due date must be in the future.</mat-error>
+          <mat-error *ngIf="dueDate?.hasError('invalidDate')">Must be in the future.</mat-error>
         </mat-form-field>
+
+        <!-- Tags -->
+        <span class="section-label mono">TAGS</span>
+        <div class="tag-list">
+          <span class="tag" *ngFor="let tag of tags">
+            #{{ tag }}
+            <button type="button" (click)="removeTag(tag)"><mat-icon>close</mat-icon></button>
+          </span>
+          <span class="tag-empty" *ngIf="tags.length === 0">No tags yet</span>
+        </div>
+        <div class="tag-add">
+          <input type="text" [(ngModel)]="newTag" [ngModelOptions]="{standalone: true}"
+                 placeholder="Add tag…" (keyup.enter)="addTag()">
+          <button type="button" class="btn btn-ghost" (click)="addTag()"><mat-icon>add</mat-icon></button>
+        </div>
       </div>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Description</mat-label>
-        <textarea matInput rows="4" formControlName="description" placeholder="Enter task description"></textarea>
-        <mat-error *ngIf="taskForm.controls['description'].hasError('required')">Description is required.</mat-error>
-        <mat-error *ngIf="taskForm.controls['description'].hasError('maxlength')">Description cannot exceed 1000 characters.</mat-error>
-      </mat-form-field>
-
-      <div class="grid-2">
-        <mat-form-field appearance="outline">
-          <mat-label>Status</mat-label>
-          <mat-select formControlName="status">
-            <mat-option *ngFor="let status of statuses" [value]="status">{{ status }}</mat-option>
-          </mat-select>
-          <mat-error *ngIf="taskForm.controls['status'].hasError('required')">Status is required.</mat-error>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Priority</mat-label>
-          <mat-select formControlName="priority">
-            <mat-option *ngFor="let priority of priorities" [value]="priority">{{ priority }}</mat-option>
-          </mat-select>
-          <mat-error *ngIf="taskForm.controls['priority'].hasError('required')">Priority is required.</mat-error>
-        </mat-form-field>
+      <div class="card side-card activity" *ngIf="createdAt || updatedAt">
+        <span class="section-label mono">ACTIVITY</span>
+        <div class="timeline">
+          <div class="tl-item" *ngIf="createdAt">
+            <span class="tl-dot"></span>
+            <span class="tl-text">Created</span>
+            <span class="tl-time mono">{{ createdAt | date:'MMM d, y · HH:mm' }}</span>
+          </div>
+          <div class="tl-item" *ngIf="updatedAt">
+            <span class="tl-dot accent"></span>
+            <span class="tl-text">Last updated</span>
+            <span class="tl-time mono">{{ updatedAt | date:'MMM d, y · HH:mm' }}</span>
+          </div>
+        </div>
       </div>
 
       <div class="detail-actions">
         <button class="btn btn-primary" type="submit">Save changes</button>
         <button class="btn danger" type="button" (click)="deleteTask()">
-          <mat-icon>delete_outline</mat-icon> Delete
+          <mat-icon>delete_outline</mat-icon>
         </button>
       </div>
-    </form>
-  </div>
+    </div>
+  </form>
 </div>

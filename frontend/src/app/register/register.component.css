@@ -60,6 +60,16 @@
   padding: 40px 36px;
   animation: fade-up var(--dur-3) var(--ease) both;
 }
+.auth-card.wide { width: 520px; }
+.reg-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 12px;
+}
+.reg-grid .span-2 { grid-column: 1 / -1; }
+@media (max-width: 520px) {
+  .reg-grid { grid-template-columns: 1fr; }
+}
 .eyebrow {
   display: block;
   font-size: 11px;

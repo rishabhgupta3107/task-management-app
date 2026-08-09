@@ -1,102 +1,89 @@
-<div class="board">
-  <!-- Top bar -->
-  <header class="topbar">
-    <div class="tb-left">
-      <a class="brand" routerLink="/welcome"><span class="brand-mark">◤</span> HELM</a>
-      <span class="tb-divider"></span>
-      <span class="tb-crumb mono">board</span>
+<div class="board-page">
+  <!-- Header -->
+  <div class="head">
+    <div>
+      <span class="eyebrow mono">BOARD</span>
+      <h1>Your tasks</h1>
     </div>
-    <div class="tb-right">
+    <div class="head-actions">
       <div class="search">
         <mat-icon>search</mat-icon>
-        <input #filterInput type="text" placeholder="Filter tasks…"
+        <input #filterInput type="text" placeholder="Filter tasks & tags…"
                (keyup)="applyFilter(filterInput.value)" aria-label="Filter tasks">
       </div>
-      <app-theme-toggle></app-theme-toggle>
-      <button class="btn btn-primary new-btn" (click)="openTaskCreateDialog()">
+      <div class="view-toggle">
+        <button [class.active]="view === 'board'" (click)="setView('board')" title="Board view">
+          <mat-icon>view_kanban</mat-icon>
+        </button>
+        <button [class.active]="view === 'list'" (click)="setView('list')" title="List view">
+          <mat-icon>view_list</mat-icon>
+        </button>
+      </div>
+      <button class="btn btn-primary" (click)="openTaskCreateDialog()">
         <mat-icon>add</mat-icon> New task
       </button>
-      <button class="btn btn-ghost icon-btn" (click)="logout()" aria-label="Sign out" title="Sign out">
-        <mat-icon>logout</mat-icon>
-      </button>
     </div>
-  </header>
+  </div>
 
-  <!-- Stats -->
-  <section class="stats">
-    <div class="stat">
-      <span class="stat-label mono">TOTAL</span>
-      <span class="stat-value mono">{{ counts.ALL }}</span>
-    </div>
-    <div class="stat">
-      <span class="stat-label mono"><span class="dot s-todo"></span>TO DO</span>
-      <span class="stat-value mono">{{ counts.TO_DO }}</span>
-    </div>
-    <div class="stat">
-      <span class="stat-label mono"><span class="dot s-progress"></span>IN PROGRESS</span>
-      <span class="stat-value mono">{{ counts.IN_PROGRESS }}</span>
-    </div>
-    <div class="stat">
-      <span class="stat-label mono"><span class="dot s-done"></span>DONE</span>
-      <span class="stat-value mono">{{ counts.DONE }}</span>
-    </div>
-    <div class="stat-hint mono">
-      <span class="kbd">⌘</span><span class="kbd">K</span> to command
-    </div>
-  </section>
+  <!-- KANBAN -->
+  <div class="kanban" *ngIf="view === 'board'">
+    <div class="column" *ngFor="let col of columns">
+      <div class="col-head">
+        <span class="col-dot s-{{ col.key | lowercase }}"></span>
+        <h3>{{ col.label }}</h3>
+        <span class="col-count mono">{{ col.tasks.length }}</span>
+      </div>
+      <div class="col-body" cdkDropList [cdkDropListData]="col.tasks" [id]="col.id"
+           [cdkDropListConnectedTo]="connectedIds" (cdkDropListDropped)="drop($event, col)">
+        <article class="kcard" *ngFor="let t of col.tasks" cdkDrag (click)="viewTaskDetails(t)">
+          <div class="kcard-top">
+            <span class="chip p-{{ t.priority | lowercase }}">{{ t.priority }}</span>
+            <button class="kcard-del" (click)="confirmDeleteTask(t, $event)" aria-label="Delete">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+          <p class="kcard-title">{{ t.title }}</p>
+          <div class="kcard-tags" *ngIf="t.tags?.length">
+            <span class="tag mono" *ngFor="let tag of t.tags">#{{ tag }}</span>
+          </div>
+          <div class="kcard-foot">
+            <span class="kcard-due mono">{{ due(t) }}</span>
+            <span class="kcard-sub mono" *ngIf="t.subtasks?.length">
+              <mat-icon>checklist</mat-icon>
+              {{ countDone(t) }}/{{ t.subtasks?.length }}
+            </span>
+          </div>
+        </article>
 
-  <!-- Table -->
-  <section class="table-wrap card">
+        <div class="col-empty" *ngIf="col.tasks.length === 0">Drop tasks here</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIST -->
+  <div class="table-wrap card" *ngIf="view === 'list'">
     <div class="thead mono">
-      <button class="th col-id" (click)="toggleSort('id')">
-        ID <span class="sort" *ngIf="sortActive === 'id'">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
-      </button>
-      <button class="th col-title" (click)="toggleSort('title')">
-        TASK <span class="sort" *ngIf="sortActive === 'title'">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
-      </button>
-      <button class="th col-status" (click)="toggleSort('status')">
-        STATUS <span class="sort" *ngIf="sortActive === 'status'">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
-      </button>
-      <button class="th col-prio" (click)="toggleSort('priority')">
-        PRIORITY <span class="sort" *ngIf="sortActive === 'priority'">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
-      </button>
-      <button class="th col-due" (click)="toggleSort('dueDate')">
-        DUE <span class="sort" *ngIf="sortActive === 'dueDate'">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
-      </button>
-      <span class="th col-act"></span>
+      <button class="th" (click)="toggleSort('id')">ID <span *ngIf="sortActive==='id'">{{ sortDir==='asc'?'▲':'▼' }}</span></button>
+      <button class="th" (click)="toggleSort('title')">TASK <span *ngIf="sortActive==='title'">{{ sortDir==='asc'?'▲':'▼' }}</span></button>
+      <button class="th" (click)="toggleSort('status')">STATUS <span *ngIf="sortActive==='status'">{{ sortDir==='asc'?'▲':'▼' }}</span></button>
+      <button class="th" (click)="toggleSort('priority')">PRIORITY <span *ngIf="sortActive==='priority'">{{ sortDir==='asc'?'▲':'▼' }}</span></button>
+      <button class="th" (click)="toggleSort('dueDate')">DUE <span *ngIf="sortActive==='dueDate'">{{ sortDir==='asc'?'▲':'▼' }}</span></button>
+      <span class="th"></span>
     </div>
-
     <div class="tbody">
-      <div class="trow" *ngFor="let t of tasks; let i = index" (click)="viewTaskDetails(t)"
-           [style.animation-delay.ms]="i * 28" tabindex="0"
-           (keyup.enter)="viewTaskDetails(t)">
-        <span class="col-id mono text-faint">#{{ t.id }}</span>
-        <span class="col-title">{{ t.title }}</span>
-        <span class="col-status">
-          <span class="chip s-{{ t.status | lowercase }}"><span class="dot"></span>{{ t.status }}</span>
-        </span>
-        <span class="col-prio">
-          <span class="chip p-{{ t.priority | lowercase }}">{{ t.priority }}</span>
-        </span>
-        <span class="col-due mono text-faint">{{ t.dueDate || '—' }}</span>
-        <span class="col-act">
-          <button class="row-act" (click)="confirmDeleteTask(t, $event)" aria-label="Delete task">
-            <mat-icon>delete_outline</mat-icon>
-          </button>
-        </span>
+      <div class="trow" *ngFor="let t of listTasks" (click)="viewTaskDetails(t)">
+        <span class="mono text-faint">#{{ t.id }}</span>
+        <span class="ttitle">{{ t.title }}</span>
+        <span><span class="chip s-{{ t.status | lowercase }}"><span class="dot"></span>{{ t.status }}</span></span>
+        <span><span class="chip p-{{ t.priority | lowercase }}">{{ t.priority }}</span></span>
+        <span class="mono text-faint">{{ t.dueDate || '—' }}</span>
+        <span><button class="row-act" (click)="confirmDeleteTask(t, $event)" aria-label="Delete"><mat-icon>delete_outline</mat-icon></button></span>
       </div>
-
-      <div class="empty" *ngIf="!loading && tasks.length === 0">
-        <mat-icon>inbox</mat-icon>
-        <p>No tasks yet.</p>
-        <button class="btn btn-primary" (click)="openTaskCreateDialog()">Create your first task</button>
+      <div class="empty" *ngIf="!loading && listTasks.length === 0">
+        <mat-icon>inbox</mat-icon><p>No tasks found.</p>
       </div>
     </div>
+  </div>
 
-    <div class="pager mono" *ngIf="!searchKeyword && totalPages > 1">
-      <button class="btn btn-ghost" (click)="prevPage()" [disabled]="pageIndex === 0">‹ Prev</button>
-      <span class="pager-info">Page {{ pageIndex + 1 }} / {{ totalPages }} · {{ totalElements }} tasks</span>
-      <button class="btn btn-ghost" (click)="nextPage()" [disabled]="pageIndex >= totalPages - 1">Next ›</button>
-    </div>
-  </section>
+  <div class="loading mono" *ngIf="loading">Loading board…</div>
 </div>

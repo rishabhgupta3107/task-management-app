@@ -1,0 +1,42 @@
+<div class="analytics">
+  <div class="head">
+    <span class="eyebrow mono">ANALYTICS</span>
+    <h1>Your operating tempo</h1>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi card">
+      <span class="kpi-label mono">TOTAL TASKS</span>
+      <span class="kpi-value mono">{{ kpis.total }}</span>
+    </div>
+    <div class="kpi card">
+      <span class="kpi-label mono">COMPLETION</span>
+      <span class="kpi-value mono">{{ kpis.completion }}<i>%</i></span>
+    </div>
+    <div class="kpi card">
+      <span class="kpi-label mono">ACTIVE</span>
+      <span class="kpi-value mono">{{ kpis.active }}</span>
+    </div>
+    <div class="kpi card danger" [class.danger]="kpis.overdue > 0">
+      <span class="kpi-label mono">OVERDUE</span>
+      <span class="kpi-value mono">{{ kpis.overdue }}</span>
+    </div>
+  </div>
+
+  <div class="charts">
+    <div class="chart-card card wide">
+      <h3>Throughput · last 14 days</h3>
+      <div class="canvas-wrap tall"><canvas #throughputCanvas></canvas></div>
+    </div>
+    <div class="chart-card card">
+      <h3>Status mix</h3>
+      <div class="canvas-wrap"><canvas #statusCanvas></canvas></div>
+    </div>
+    <div class="chart-card card">
+      <h3>Priority breakdown</h3>
+      <div class="canvas-wrap"><canvas #priorityCanvas></canvas></div>
+    </div>
+  </div>
+
+  <div class="loading mono" *ngIf="loading">Crunching your numbers…</div>
+</div>

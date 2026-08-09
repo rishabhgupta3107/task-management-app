@@ -3,6 +3,11 @@ package com.rishabhgupta3107.taskmanagement.backend_springboot.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.rishabhgupta3107.taskmanagement.backend_springboot.model.Task;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,4 +24,9 @@ public class TaskResponse {
 
   @JsonFormat(pattern = "yyyy-MM-dd")
   private LocalDate dueDate;
+
+  private Set<String> tags = new LinkedHashSet<>();
+  private List<SubtaskDto> subtasks = new ArrayList<>();
+  private LocalDateTime createdAt;
+  private LocalDateTime updatedAt;
 }

@@ -1,0 +1,53 @@
+<div class="shell" [class.nav-open]="navOpen()">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <a class="brand" routerLink="/app/focus">
+      <span class="brand-mark">◤</span><span class="brand-name">HELM</span>
+    </a>
+
+    <nav class="nav">
+      <a *ngFor="let item of nav" class="nav-item" [routerLink]="item.path"
+         routerLinkActive="active" (click)="navOpen.set(false)">
+        <mat-icon>{{ item.icon }}</mat-icon>
+        <span class="nav-label">{{ item.label }}</span>
+      </a>
+    </nav>
+
+    <a class="profile-chip" routerLink="/app/profile" routerLinkActive="active"
+       (click)="navOpen.set(false)">
+      <app-avatar [username]="profile()?.username || ''" [name]="profile()?.fullName"
+                  [imageUrl]="profile()?.avatarUrl" [size]="34"></app-avatar>
+      <span class="profile-meta">
+        <span class="profile-name">{{ profile()?.fullName || profile()?.username || '—' }}</span>
+        <span class="profile-role mono">{{ profile()?.title || 'Operator' }}</span>
+      </span>
+    </a>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <header class="topbar">
+      <button class="btn btn-ghost icon-btn menu-btn" (click)="navOpen.set(!navOpen())" aria-label="Menu">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <div class="cmdk-hint mono" (click)="openPalette()">
+        <mat-icon>bolt</mat-icon> Command
+        <span class="kbd">⌘</span><span class="kbd">K</span>
+      </div>
+      <div class="spacer"></div>
+      <app-theme-toggle></app-theme-toggle>
+      <button class="btn btn-primary new-btn" (click)="newTask()">
+        <mat-icon>add</mat-icon><span>New task</span>
+      </button>
+      <button class="btn btn-ghost icon-btn" (click)="logout()" aria-label="Sign out" title="Sign out">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </header>
+
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+
+  <div class="scrim" (click)="navOpen.set(false)"></div>
+</div>

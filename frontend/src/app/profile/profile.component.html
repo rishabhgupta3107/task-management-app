@@ -1,0 +1,70 @@
+<div class="profile" *ngIf="profile">
+  <div class="banner card">
+    <div class="banner-glow"></div>
+    <app-avatar class="big-avatar" [username]="profile.username" [name]="profile.fullName"
+                [imageUrl]="liveAvatar" [size]="96"></app-avatar>
+    <div class="who">
+      <h1>{{ profile.fullName || profile.username }}</h1>
+      <p class="handle mono">&#64;{{ profile.username }}<span *ngIf="profile.title"> · {{ profile.title }}</span></p>
+      <p class="bio" *ngIf="profile.bio">{{ profile.bio }}</p>
+    </div>
+    <button class="btn" *ngIf="!editing" (click)="startEdit()">
+      <mat-icon>edit</mat-icon> Edit profile
+    </button>
+  </div>
+
+  <p class="save-msg mono" *ngIf="message">{{ message }}</p>
+
+  <!-- Read-only facts -->
+  <div class="facts" *ngIf="!editing">
+    <div class="fact card"><span class="fk mono">EMAIL</span><span class="fv">{{ profile.email || '—' }}</span></div>
+    <div class="fact card"><span class="fk mono">AGE</span><span class="fv">{{ profile.age != null ? profile.age + ' yrs' : '—' }}</span></div>
+    <div class="fact card"><span class="fk mono">DATE OF BIRTH</span><span class="fv">{{ profile.dob || '—' }}</span></div>
+    <div class="fact card"><span class="fk mono">TIMEZONE</span><span class="fv">{{ profile.timezone || '—' }}</span></div>
+    <div class="fact card"><span class="fk mono">MEMBER SINCE</span><span class="fv">{{ memberSince }}</span></div>
+  </div>
+
+  <!-- Edit form -->
+  <form class="edit card" *ngIf="editing" [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <h3>Edit profile</h3>
+    <div class="grid-2">
+      <mat-form-field appearance="outline">
+        <mat-label>Full name</mat-label>
+        <input matInput formControlName="fullName">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Title / role</mat-label>
+        <input matInput formControlName="title">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email">
+        <mat-error *ngIf="form.controls['email'].hasError('email')">Enter a valid email.</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Date of birth</mat-label>
+        <input matInput [matDatepicker]="dp" formControlName="dob">
+        <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+        <mat-datepicker #dp></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Timezone</mat-label>
+        <input matInput formControlName="timezone" placeholder="e.g. Asia/Kolkata">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Avatar image URL</mat-label>
+        <input matInput formControlName="avatarUrl" placeholder="https://…">
+      </mat-form-field>
+    </div>
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Bio</mat-label>
+      <textarea matInput rows="3" formControlName="bio"></textarea>
+    </mat-form-field>
+    <div class="edit-actions">
+      <button class="btn btn-ghost" type="button" (click)="cancel()">Cancel</button>
+      <button class="btn btn-primary" type="submit" [disabled]="saving">
+        {{ saving ? 'Saving…' : 'Save changes' }}
+      </button>
+    </div>
+  </form>
+</div>

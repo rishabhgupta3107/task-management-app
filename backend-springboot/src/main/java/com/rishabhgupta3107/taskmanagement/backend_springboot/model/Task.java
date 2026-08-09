@@ -49,6 +49,24 @@ public class Task {
 
   private LocalDate dueDate;
 
+  @ElementCollection(fetch = FetchType.LAZY)
+  @CollectionTable(name = "task_tags", joinColumns = @JoinColumn(name = "task_id"))
+  @Column(name = "tag", length = 40)
+  private Set<String> tags = new LinkedHashSet<>();
+
+  @ElementCollection(fetch = FetchType.LAZY)
+  @CollectionTable(name = "task_subtasks", joinColumns = @JoinColumn(name = "task_id"))
+  @OrderColumn(name = "position")
+  private List<Subtask> subtasks = new ArrayList<>();
+
+  @CreationTimestamp
+  @Column(name = "created_at", updatable = false)
+  private LocalDateTime createdAt;
+
+  @UpdateTimestamp
+  @Column(name = "updated_at")
+  private LocalDateTime updatedAt;
+
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "user_id", nullable = false)
   private Users owner;
