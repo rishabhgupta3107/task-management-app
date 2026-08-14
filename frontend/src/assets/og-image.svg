@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="acc" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6e8bff"/>
+      <stop offset="1" stop-color="#a06bff"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="0%" r="75%">
+      <stop offset="0" stop-color="#6e8bff" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#6e8bff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#08090c"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <g stroke="#ffffff" stroke-opacity="0.04">
+    <path d="M0 90H1200M0 180H1200M0 270H1200M0 360H1200M0 450H1200M0 540H1200"/>
+    <path d="M100 0V630M250 0V630M400 0V630M550 0V630M700 0V630M850 0V630M1000 0V630M1150 0V630"/>
+  </g>
+  <g transform="translate(96,150)">
+    <text x="0" y="0" font-family="Inter, sans-serif" font-size="22" letter-spacing="6" fill="#6e8bff" font-weight="700">◤ HELM · MISSION CONTROL FOR YOUR WORK</text>
+    <text x="-2" y="120" font-family="Inter, sans-serif" font-size="86" font-weight="800" fill="#e7e9ee" letter-spacing="-2">Stop tracking tasks.</text>
+    <text x="-2" y="216" font-family="Inter, sans-serif" font-size="86" font-weight="800" fill="url(#acc)" letter-spacing="-2">Start commanding them.</text>
+    <text x="0" y="300" font-family="Inter, sans-serif" font-size="30" fill="#9aa0ad">A keyboard-first task terminal — the speed of Linear, the density of a trading desk.</text>
+  </g>
+</svg>

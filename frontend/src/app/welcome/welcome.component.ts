@@ -8,6 +8,7 @@ import {
   ViewChild,
   ViewChildren,
 } from '@angular/core';
+import { Meta, Title } from '@angular/platform-browser';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
@@ -71,7 +72,14 @@ export class WelcomeComponent implements AfterViewInit, OnDestroy {
     },
   ];
 
-  constructor(private zone: NgZone) {}
+  constructor(private zone: NgZone, private title: Title, private meta: Meta) {
+    const desc =
+      "HELM turns scattered work into a prioritized operating picture — so you always know what's next. A keyboard-first task terminal with the speed of Linear and the density of a trading terminal.";
+    this.title.setTitle('HELM — Stop tracking. Start commanding.');
+    this.meta.updateTag({ name: 'description', content: desc });
+    this.meta.updateTag({ property: 'og:title', content: 'HELM — Stop tracking. Start commanding.' });
+    this.meta.updateTag({ property: 'og:description', content: desc });
+  }
 
   ngAfterViewInit(): void {
     this.zone.runOutsideAngular(() => {

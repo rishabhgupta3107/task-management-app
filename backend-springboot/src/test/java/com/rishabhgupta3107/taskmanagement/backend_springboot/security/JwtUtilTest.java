@@ -1,4 +1,4 @@
-package security;
+package com.rishabhgupta3107.taskmanagement.backend_springboot.security;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

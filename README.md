@@ -171,6 +171,15 @@ All `/api/tasks/**` endpoints require a `Bearer` token and are scoped to the aut
   silently drift.
 - Frontend unit test specs (`*.spec.ts`) are scaffolding and may need module imports updated
   before `npm test` passes; they are excluded from production builds.
+- **Security:** the JWT lives in `localStorage`, backed by a strict Content-Security-Policy served
+  from nginx and Angular's default output encoding. Rationale and the switch-to-cookie criteria are
+  in [`docs/adr/0001-jwt-storage.md`](docs/adr/0001-jwt-storage.md). Production error responses are
+  trimmed (`server.error.include-message=never`); set `ERROR_INCLUDE_MESSAGE=always` locally to debug.
+- **SEO:** `/welcome` ships Open Graph / Twitter / canonical / JSON-LD metadata in `index.html`.
+  Replace the `https://helm.example.com` placeholder URLs with your real origin, and swap
+  `assets/og-image.svg` for a 1200×630 **PNG** (many social scrapers don't render SVG). Google
+  executes JS so the SPA is indexable as-is; for best LCP and non-JS scrapers, consider
+  **prerendering** `/welcome` (Angular SSG) as a follow-up.
 
 ## Contact
 

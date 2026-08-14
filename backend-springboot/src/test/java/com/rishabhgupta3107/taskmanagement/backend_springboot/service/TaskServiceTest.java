@@ -1,4 +1,4 @@
-package service;
+package com.rishabhgupta3107.taskmanagement.backend_springboot.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

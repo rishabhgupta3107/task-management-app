@@ -47,5 +47,10 @@ management:
 
 server:
   error:
-    include-message: always
-    include-binding-errors: always
+    # Don't leak internal messages/stack detail in production responses. The global
+    # exception handler still returns intentional, sanitized messages and field errors.
+    # Override to "always" locally for debugging: ERROR_INCLUDE_MESSAGE=always
+    include-message: ${ERROR_INCLUDE_MESSAGE:never}
+    include-binding-errors: ${ERROR_INCLUDE_BINDING_ERRORS:never}
+    include-stacktrace: never
+    include-exception: false

@@ -1,4 +1,4 @@
-package controller;
+package com.rishabhgupta3107.taskmanagement.backend_springboot.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

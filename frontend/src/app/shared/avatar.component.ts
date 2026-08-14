@@ -6,7 +6,8 @@ import { avatarGradient, initialsOf } from './avatar.util';
   template: `
     <span class="avatar" [style.width.px]="size" [style.height.px]="size"
           [style.fontSize.px]="size * 0.4">
-      <img *ngIf="imageUrl" [src]="imageUrl" [alt]="name || username" (error)="imageUrl = ''" />
+      <img *ngIf="imageUrl" [src]="imageUrl" [alt]="(name || username || 'User') + ' profile photo'"
+           (error)="imageUrl = ''" />
       <span *ngIf="!imageUrl" class="initials" [style.background]="gradient">{{ initials }}</span>
     </span>
   `,
