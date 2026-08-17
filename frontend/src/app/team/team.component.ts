@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { TeamService } from '../services/team.service';
 import { UserService } from '../services/user.service';
-import { ConfirmService } from '../services/confirm.service';
 import { OrgRole, ORG_ROLES, TeamMember, orgRoleLabel } from '../models/user-profile';
 import { Task } from '../task';
 
@@ -29,9 +27,7 @@ export class TeamComponent implements OnInit {
 
   constructor(
     private teamService: TeamService,
-    private userService: UserService,
-    private confirmService: ConfirmService,
-    private router: Router
+    private userService: UserService
   ) {}
 
   ngOnInit(): void {

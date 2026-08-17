@@ -19,8 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Tasks are scoped by assignee. A user sees and edits tasks assigned to them; a manager may
- * additionally view (read-only) the tasks of anyone in their reporting tree, and may create/assign
- * tasks down to their reports.
+ * additionally view (read-only) the tasks of anyone in their reporting tree, and may create/assign tasks down to their reports.
  */
 @Service
 @RequiredArgsConstructor

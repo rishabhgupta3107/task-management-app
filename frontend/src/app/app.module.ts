@@ -38,6 +38,9 @@ import { ProfileComponent } from './profile/profile.component';
 import { TeamComponent } from './team/team.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
+import { TitleStrategy } from '@angular/router';
+import { NotFoundComponent } from './not-found/not-found.component';
+import { TemplatePageTitleStrategy } from './services/title-strategy.service';
 
 @NgModule({
   declarations: [
@@ -58,6 +61,7 @@ import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
     AnalyticsComponent,
     ProfileComponent,
     TeamComponent,
+    NotFoundComponent,
   ],
   imports: [
     HttpClientModule,
@@ -87,6 +91,7 @@ import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true },
     // en-GB gives a DD/MM/YYYY datepicker input format.
     { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
+    { provide: TitleStrategy, useClass: TemplatePageTitleStrategy },
   ],
   bootstrap: [AppComponent],
 })

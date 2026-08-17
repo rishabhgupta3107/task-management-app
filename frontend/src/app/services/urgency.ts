@@ -17,8 +17,7 @@ export function daysUntilDue(task: Task): number | null {
 }
 
 /**
- * A 0–100 urgency score combining how close the deadline is with the task's priority.
- * DONE tasks always score 0. This is the "what should I do next" brain.
+ * A 0–100 urgency score combining how close the deadline is with the task's priority. DONE tasks always score 0. This is the "what should I do next" brain.
  */
 export function urgencyScore(task: Task): number {
   if (task.status === 'DONE') {

@@ -1,13 +1,10 @@
 # ADR 0001 — JWT storage model
 
-**Status:** Accepted
-**Date:** 2026-08
-**Decision owner:** Rishabh Gupta
+**Status:** Accepted **Date:** 2026-08 **Decision owner:** Rishabh Gupta
 
 ## Context
 
-HELM authenticates with a stateless JWT (HS256, 1-hour access token). The token must live
-somewhere in the browser. The two realistic options:
+HELM authenticates with a stateless JWT (HS256, 1-hour access token). The token must live somewhere in the browser. The two realistic options:
 
 1. **`localStorage` + strict XSS hygiene** — the SPA reads the token and attaches it as an
    `Authorization: Bearer` header. Simple; the token is readable by any JavaScript, so its
@@ -26,8 +23,7 @@ somewhere in the browser. The two realistic options:
 
 ## Decision
 
-**Keep the token in `localStorage`, and harden the origin against XSS** rather than moving to
-`httpOnly` cookies at this time. Concretely:
+**Keep the token in `localStorage`, and harden the origin against XSS** rather than moving to `httpOnly` cookies at this time. Concretely:
 
 - A strict **Content-Security-Policy** is served by nginx (`script-src 'self'`), so even if an
   injection sink were introduced later, injected inline/remote scripts would not execute.
@@ -37,8 +33,7 @@ somewhere in the browser. The two realistic options:
   (`bypassSecurityTrustHtml` etc. are prohibited without a security review).
 - The token interceptor already logs the user out on `401`, limiting the window of a stale token.
 
-This keeps the implementation simple and avoids the CSRF complexity, while the CSP provides
-defense-in-depth that substantially closes the localStorage-token risk.
+This keeps the implementation simple and avoids the CSRF complexity, while the CSP provides defense-in-depth that substantially closes the localStorage-token risk.
 
 ## When to revisit (switch to httpOnly cookie + CSRF)
 
@@ -48,9 +43,7 @@ Move to `httpOnly` cookies if any of these become true:
 - We handle higher-sensitivity data (payments, health, regulated PII).
 - We need refresh-token rotation with long-lived sessions.
 
-At that point: set the JWT as an `httpOnly; Secure; SameSite=Strict` cookie on login, read it from
-the cookie in `JwtFilter`, drop the `Authorization` header from the interceptor, re-enable Spring
-Security CSRF with a `XSRF-TOKEN` cookie, and set `withCredentials` on the Angular HTTP client.
+At that point: set the JWT as an `httpOnly; Secure; SameSite=Strict` cookie on login, read it from the cookie in `JwtFilter`, drop the `Authorization` header from the interceptor, re-enable Spring Security CSRF with a `XSRF-TOKEN` cookie, and set `withCredentials` on the Angular HTTP client.
 
 ## Consequences
 
