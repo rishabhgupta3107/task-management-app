@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### OS / env ###
+.DS_Store
+.env
+.env.*
+!.env.example

@@ -4,8 +4,7 @@ import { Observable } from 'rxjs';
 import { ConfirmationDialogueComponent } from '../confirmation-dialogue/confirmation-dialogue.component';
 
 /**
- * Centralizes the confirm-dialog boilerplate that was previously duplicated across components.
- * Emits `true` when the user confirms, `false`/`undefined` otherwise.
+ * Centralizes the confirm-dialog boilerplate that was previously duplicated across components. Emits `true` when the user confirms, `false`/`undefined` otherwise.
  */
 @Injectable({
   providedIn: 'root',

@@ -1,16 +1,12 @@
 # HELM — Mission control for your work
 
-HELM is a keyboard-first "task terminal" — the speed of Linear, the glanceable density of a
-trading terminal, and the delight of Raycast — for operators running live, time-sensitive work.
+HELM is a keyboard-first "task terminal" — the speed of Linear, the glanceable density of a trading terminal, and the delight of Raycast — for operators running live, time-sensitive work.
 
-It's built on a **Spring Boot** backend and an **Angular 17** frontend, with JWT authentication,
-self-service registration, and per-user task CRUD (server-side pagination, search, filtering).
-Each user only ever sees their own tasks.
+It's built on a **Spring Boot** backend and an **Angular 17** frontend, with JWT authentication, self-service registration, and per-user task CRUD (server-side pagination, search, filtering). Each user only ever sees their own tasks.
 
 ### What HELM does
 
-HELM isn't a passive list — it turns your tasks into an *operating picture* and tells you what to
-do next. It bridges the gaps common to task apps:
+HELM isn't a passive list — it turns your tasks into an *operating picture* and tells you what to do next. It bridges the gaps common to task apps:
 
 - **Focus view** — an urgency engine scores every task from priority + due date and surfaces
   Overdue / Due today / At-risk / Upcoming, with a "do this next" hero. (Fixes "apps are just lists.")
@@ -35,8 +31,7 @@ do next. It bridges the gaps common to task apps:
 - **⌘K command palette** — jump to any view, create a task, toggle theme, or sign out from anywhere.
 - Polished micro-interactions and route transitions; respects `prefers-reduced-motion`.
 
-Tech: Angular 17, Angular Material (themed), Angular CDK drag-drop, GSAP + ScrollTrigger, Lenis
-smooth scroll, Chart.js.
+Tech: Angular 17, Angular Material (themed), Angular CDK drag-drop, GSAP + ScrollTrigger, Lenis smooth scroll, Chart.js.
 
 ## Architecture
 
@@ -48,8 +43,7 @@ smooth scroll, Chart.js.
 
 ## Run with Docker (recommended)
 
-The fastest way to run the whole stack — Postgres, backend, and frontend — with one command.
-Requires only **Docker** and **Docker Compose**.
+The fastest way to run the whole stack — Postgres, backend, and frontend — with one command. Requires only **Docker** and **Docker Compose**.
 
 ```sh
 # Optional but recommended: set a strong JWT secret (≥ 32 chars)
@@ -91,8 +85,7 @@ CREATE USER taskuser WITH PASSWORD 'taskpass';
 GRANT ALL PRIVILEGES ON DATABASE taskmanagement TO taskuser;
 ```
 
-Flyway runs the migrations in `src/main/resources/db/migration` automatically on startup,
-creating the schema and seeding one user and three example tasks.
+Flyway runs the migrations in `src/main/resources/db/migration` automatically on startup, creating the schema and seeding one user and three example tasks.
 
 ## 2. Backend
 
@@ -115,8 +108,7 @@ export JWT_SECRET="change-me-to-a-long-random-string-please"
 ./mvnw spring-boot:run
 ```
 
-The API is served at `http://localhost:8080`. Actuator exposes only `/actuator/health`
-(public) and `/actuator/info` (authenticated).
+The API is served at `http://localhost:8080`. Actuator exposes only `/actuator/health` (public) and `/actuator/info` (authenticated).
 
 ## 3. Frontend
 

@@ -12,31 +12,51 @@ import { FocusComponent } from './focus/focus.component';
 import { AnalyticsComponent } from './analytics/analytics.component';
 import { ProfileComponent } from './profile/profile.component';
 import { TeamComponent } from './team/team.component';
+import { NotFoundComponent } from './not-found/not-found.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/welcome', pathMatch: 'full' },
-  { path: 'welcome', component: WelcomeComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'logout', component: LogoutComponent, canActivate: [authGuard] },
+  {
+    path: 'welcome',
+    component: WelcomeComponent,
+    title: 'Welcome',
+    data: {
+      description:
+        'HELM — keyboard-first mission control for live, time-sensitive work. The speed of Linear, the density of a trading terminal.',
+    },
+  },
+  {
+    path: 'login',
+    component: LoginComponent,
+    title: 'Sign In',
+    data: { description: 'Sign in to your HELM account.' },
+  },
+  {
+    path: 'register',
+    component: RegisterComponent,
+    title: 'Create Account',
+    data: { description: 'Create a HELM account and take command of your work.' },
+  },
+  { path: 'logout', component: LogoutComponent, canActivate: [authGuard], title: 'Signing out' },
   {
     path: 'app',
     component: ShellComponent,
     canActivate: [authGuard],
+    title: 'Command Deck',
     children: [
       { path: '', redirectTo: 'focus', pathMatch: 'full' },
-      { path: 'focus', component: FocusComponent },
-      { path: 'board', component: TaskListComponent },
-      { path: 'analytics', component: AnalyticsComponent },
-      { path: 'team', component: TeamComponent },
-      { path: 'profile', component: ProfileComponent },
-      { path: 'tasks/:id', component: TaskDetailComponent },
+      { path: 'focus', component: FocusComponent, title: 'Focus' },
+      { path: 'board', component: TaskListComponent, title: 'Board' },
+      { path: 'analytics', component: AnalyticsComponent, title: 'Analytics' },
+      { path: 'team', component: TeamComponent, title: 'Team' },
+      { path: 'profile', component: ProfileComponent, title: 'Profile' },
+      { path: 'tasks/:id', component: TaskDetailComponent, title: 'Task' },
     ],
   },
   // Legacy deep links → new nested routes.
   { path: 'tasks', redirectTo: '/app/board', pathMatch: 'full' },
   { path: 'tasks/:id', redirectTo: '/app/tasks/:id' },
-  { path: '**', redirectTo: '/welcome' },
+  { path: '**', component: NotFoundComponent, title: 'Not Found' },
 ];
 
 @NgModule({
