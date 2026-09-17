@@ -1,0 +1,40 @@
+:host { display: block; height: 100%; }
+.widget {
+  height: 100%;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+}
+.w-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.w-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.w-del {
+  border: none; background: transparent; color: var(--text-faint);
+  cursor: pointer; display: inline-flex; opacity: 0; transition: opacity var(--dur-1) var(--ease), color var(--dur-1) var(--ease);
+}
+.widget:hover .w-del { opacity: 1; }
+.w-del:hover { color: var(--prio-high); }
+.w-del mat-icon { font-size: 16px; width: 16px; height: 16px; }
+
+/* KPI */
+.is-kpi { justify-content: center; }
+.kpi-body { display: flex; flex-direction: column; gap: 4px; }
+.kpi-value { font-size: 32px; font-weight: 700; color: var(--text); line-height: 1.05; letter-spacing: -0.02em; }
+.kpi-delta { font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+.kpi-delta.up { color: var(--status-done); }
+.kpi-delta.down { color: var(--prio-high); }
+.kpi-delta-note { color: var(--text-faint); font-weight: 400; }
+.kpi-metric { font-size: 10px; letter-spacing: 0.1em; color: var(--text-faint); margin-top: 2px; }
+
+/* Charts */
+.chart-body { position: relative; flex: 1; min-height: 180px; }
+
+/* Table */
+.table-body { flex: 1; overflow-y: auto; max-height: 240px; }
+.t-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 7px 2px; border-bottom: 1px solid var(--grid-line); font-size: 13px; color: var(--text); }
+.t-head { font-size: 10px; letter-spacing: 0.08em; color: var(--text-faint); border-bottom: 1px solid var(--border); }
+.t-empty { padding: 20px; text-align: center; color: var(--text-faint); font-size: 13px; }

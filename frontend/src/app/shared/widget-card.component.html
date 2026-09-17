@@ -1,0 +1,33 @@
+<div class="widget card" [class.is-kpi]="widget.type === 'KPI'">
+  <div class="w-head">
+    <span class="w-title">{{ widget.title }}</span>
+    <button *ngIf="!readonly" class="w-del" (click)="remove.emit()" aria-label="Remove widget">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <ng-container [ngSwitch]="widget.type">
+    <div *ngSwitchCase="'KPI'" class="kpi-body">
+      <span class="kpi-value">{{ formatted }}</span>
+      <span class="kpi-delta" *ngIf="hasDelta" [class.up]="delta >= 0" [class.down]="delta < 0">
+        {{ delta >= 0 ? '▲' : '▼' }} {{ delta >= 0 ? delta : -delta }}%
+        <span class="kpi-delta-note">vs prior period</span>
+      </span>
+      <span class="kpi-metric mono">{{ metricLabel(widget.metricKey) }}</span>
+    </div>
+
+    <div *ngSwitchCase="'TABLE'" class="table-body">
+      <div class="t-row t-head mono">
+        <span>DATE</span><span>{{ metricLabel(widget.metricKey) }}</span>
+      </div>
+      <div class="t-row" *ngFor="let r of tableRows">
+        <span class="mono">{{ r.date }}</span><span>{{ fmt(r.value) }}</span>
+      </div>
+      <div class="t-empty" *ngIf="tableRows.length === 0">No data yet</div>
+    </div>
+
+    <div *ngSwitchDefault class="chart-body">
+      <canvas #canvas></canvas>
+    </div>
+  </ng-container>
+</div>

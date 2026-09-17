@@ -1,12 +1,9 @@
-<!-- Top navigation -->
 <header class="nav">
-  <a class="brand" routerLink="/welcome">
-    <span class="brand-mark">◤</span> HELM
-  </a>
+  <a class="brand" routerLink="/welcome"><span class="brand-mark">◤</span> HELM</a>
   <nav class="nav-links">
+    <a href="#problem">The problem</a>
+    <a href="#how">How it works</a>
     <a href="#features">Features</a>
-    <a href="#terminal">Terminal</a>
-    <a href="https://github.com/rishabhgupta3107" target="_blank" rel="noopener">GitHub</a>
   </nav>
   <div class="nav-actions">
     <app-theme-toggle></app-theme-toggle>
@@ -14,55 +11,143 @@
   </div>
 </header>
 
-<!-- HERO with scroll-driven orbit ring -->
-<section class="hero">
-  <div class="grid-bg"></div>
-  <div class="glow"></div>
+<!-- ============================ HERO ============================ -->
+<section class="hero" #hero>
+  <div class="fx-grid" aria-hidden="true"></div>
+  <div class="fx-aurora a1" aria-hidden="true"></div>
+  <div class="fx-aurora a2" aria-hidden="true"></div>
 
-  <div class="orbit-wrap" aria-hidden="true">
-    <div class="ring" #ring>
-      <div class="orbit-card" #orbitCard *ngFor="let c of orbit">
-        <div class="oc-top">
-          <span class="chip s-{{ c.status | lowercase }}"><span class="dot"></span>{{ c.status }}</span>
-          <span class="chip p-{{ c.priority | lowercase }}">{{ c.priority }}</span>
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <span class="eyebrow mono" data-anim="eyebrow">FOR DIGITAL MARKETING AGENCIES</span>
+
+      <h1 class="hero-title">
+        <span class="line" data-anim="line"><span>Client reporting</span></span>
+        <span class="line" data-anim="line"><span class="grad">that builds itself.</span></span>
+      </h1>
+
+      <p class="hero-sub" data-anim="sub">
+        Agencies burn <strong>2–10 hours every week</strong> exporting, pasting and re-formatting the
+        same numbers. HELM gives each client a live white-label dashboard — so the month-end report
+        becomes a link you already sent.
+      </p>
+
+      <div class="hero-cta" data-anim="cta">
+        <a class="btn btn-primary btn-lg" routerLink="/register">Start free</a>
+        <a class="btn btn-lg" routerLink="/login">See the live demo</a>
+      </div>
+
+      <ul class="trust" data-anim="trust">
+        <li><mat-icon>check</mat-icon> White-label included</li>
+        <li><mat-icon>check</mat-icon> CSV, manual or API</li>
+        <li><mat-icon>check</mat-icon> Unlimited clients</li>
+      </ul>
+    </div>
+
+    <!-- The artifact the whole product exists to produce -->
+    <div class="hero-visual">
+      <div class="report-card" #reportCard data-anim="card"
+           (pointermove)="onCardMove($event)" (pointerleave)="onCardLeave()">
+        <div class="rc-head">
+          <span class="rc-avatar">A</span>
+          <div class="rc-titles">
+            <span class="rc-client">Acme Coffee Co.</span>
+            <span class="rc-sub mono">Marketing overview · last 30 days</span>
+          </div>
+          <span class="rc-live mono"><i></i>LIVE</span>
         </div>
-        <p class="oc-title">{{ c.title }}</p>
-        <span class="oc-meta mono">{{ c.meta }}</span>
+
+        <div class="rc-kpis">
+          <div class="rc-kpi" data-anim="kpi" *ngFor="let k of kpis">
+            <span class="rc-kpi-label mono">{{ k.label }}</span>
+            <span class="rc-kpi-value">
+              {{ k.prefix }}<span [attr.data-count]="k.value">0</span>{{ k.suffix }}
+            </span>
+            <span class="rc-kpi-delta" [class.up]="k.up" [class.down]="!k.up">
+              {{ k.up ? '▲' : '▼' }} {{ k.delta }}
+            </span>
+          </div>
+        </div>
+
+        <div class="rc-chart">
+          <svg viewBox="0 0 320 90" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.28" />
+                <stop offset="100%" stop-color="var(--accent)" stop-opacity="0" />
+              </linearGradient>
+            </defs>
+            <path class="spark-fill"
+                  d="M0,70 L26,62 L52,66 L78,48 L104,54 L130,38 L156,42 L182,28 L208,33 L234,20 L260,26 L286,12 L320,16 L320,90 L0,90 Z"
+                  fill="url(#sparkFill)" />
+            <path #spark class="spark-line"
+                  d="M0,70 L26,62 L52,66 L78,48 L104,54 L130,38 L156,42 L182,28 L208,33 L234,20 L260,26 L286,12 L320,16"
+                  fill="none" stroke="var(--accent)" stroke-width="2.5"
+                  stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </div>
+
+        <div class="rc-foot mono">
+          <span class="rc-link">helm.app/share/acme</span>
+          <span class="rc-auto">updated automatically</span>
+        </div>
       </div>
     </div>
   </div>
+</section>
 
-  <div class="hero-content">
-    <span class="eyebrow" #reveal>MISSION CONTROL FOR YOUR WORK</span>
-    <h1 class="hero-title" #reveal>
-      Stop tracking tasks.<br /><span class="grad">Start commanding them.</span>
-    </h1>
-    <p class="hero-sub" #reveal>
-      HELM turns scattered work into a prioritized operating picture — so you always know what's
-      next. A keyboard-first terminal with the speed of Linear and the density of a trading desk.
+<!-- ============================ PROBLEM ============================ -->
+<section class="section problem" id="problem">
+  <div class="section-head">
+    <span class="eyebrow mono" data-reveal>THE MONTH-END TAX</span>
+    <h2 data-reveal>Every month, the same four hours per client.</h2>
+    <p class="section-sub" data-reveal>
+      Export GA4. Export Ads. Export Meta. Paste into a deck. Screenshot the charts. Write the
+      commentary. Send a PDF that is out of date the moment it lands.
     </p>
-    <div class="hero-cta" #reveal>
-      <a class="btn btn-primary" routerLink="/login">Launch HELM</a>
-      <a class="btn" routerLink="/register">Create account</a>
-    </div>
-    <div class="hero-hint mono" #reveal>
-      Press <span class="kbd">⌘</span><span class="kbd">K</span> anywhere to command
-    </div>
   </div>
 
-  <div class="scroll-cue" aria-hidden="true">
-    <span></span>
+  <div class="stat-row" data-reveal-group>
+    <div class="stat card">
+      <span class="stat-n">2–10<i>hrs</i></span>
+      <span class="stat-l">lost per week to manual exports</span>
+    </div>
+    <div class="stat card">
+      <span class="stat-n">#1</span>
+      <span class="stat-l">reported pain: data fragmentation</span>
+    </div>
+    <div class="stat card">
+      <span class="stat-n">29<i>days</i></span>
+      <span class="stat-l">of client silence between reports</span>
+    </div>
   </div>
 </section>
 
-<!-- FEATURES -->
-<section class="features" id="features">
+<!-- ============================ HOW ============================ -->
+<section class="section how" id="how">
   <div class="section-head">
-    <span class="eyebrow" #reveal>WHY HELM</span>
-    <h2 #reveal>Built for velocity, not ceremony.</h2>
+    <span class="eyebrow mono" data-reveal>HOW IT WORKS</span>
+    <h2 data-reveal>Set it up once. Stop rebuilding it.</h2>
   </div>
-  <div class="feature-grid">
-    <article class="feature card" #reveal *ngFor="let f of features">
+
+  <ol class="steps" data-reveal-group>
+    <li class="step card" *ngFor="let s of steps">
+      <span class="step-n mono">{{ s.n }}</span>
+      <h3>{{ s.title }}</h3>
+      <p>{{ s.body }}</p>
+    </li>
+  </ol>
+</section>
+
+<!-- ============================ FEATURES ============================ -->
+<section class="section features" id="features">
+  <div class="section-head">
+    <span class="eyebrow mono" data-reveal>WHY AGENCIES SWITCH</span>
+    <h2 data-reveal>The half every reporting tool forgot.</h2>
+  </div>
+
+  <div class="feature-grid" data-reveal-group>
+    <article class="feature card" *ngFor="let f of features">
       <div class="feature-icon"><mat-icon>{{ f.icon }}</mat-icon></div>
       <h3>{{ f.title }}</h3>
       <p>{{ f.body }}</p>
@@ -70,42 +155,14 @@
   </div>
 </section>
 
-<!-- TERMINAL mock -->
-<section class="terminal-section" id="terminal">
-  <div class="section-head">
-    <span class="eyebrow" #reveal>THE BOARD</span>
-    <h2 #reveal>Every task, at a glance.</h2>
-  </div>
-
-  <div class="terminal card" #reveal>
-    <div class="term-bar">
-      <span class="dots"><i></i><i></i><i></i></span>
-      <span class="term-title mono">helm — board</span>
-      <span class="term-live mono"><span class="live-dot"></span>LIVE</span>
-    </div>
-    <div class="term-body">
-      <div class="term-row term-head mono">
-        <span>ID</span><span>TASK</span><span>STATUS</span><span>PRIORITY</span><span>DUE</span>
-      </div>
-      <div class="term-row mono" *ngFor="let c of orbit; let i = index">
-        <span class="text-faint">#{{ 1040 + i }}</span>
-        <span class="term-task">{{ c.title }}</span>
-        <span><span class="chip s-{{ c.status | lowercase }}"><span class="dot"></span>{{ c.status }}</span></span>
-        <span><span class="chip p-{{ c.priority | lowercase }}">{{ c.priority }}</span></span>
-        <span class="text-faint">{{ c.meta }}</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CTA -->
-<section class="cta-section">
-  <div class="cta card" #reveal>
-    <h2>Take the helm.</h2>
-    <p>Sign in with <span class="mono">rishabh / password</span> or create an account.</p>
+<!-- ============================ CTA ============================ -->
+<section class="section cta-section">
+  <div class="cta card" data-reveal>
+    <h2>Give your next client a link, not a PDF.</h2>
+    <p>Sign in with <span class="mono">rishabh / password</span> to open a live demo agency.</p>
     <div class="hero-cta">
-      <a class="btn btn-primary" routerLink="/login">Launch HELM</a>
-      <a class="btn" routerLink="/register">Create account</a>
+      <a class="btn btn-primary btn-lg" routerLink="/login">Open the demo</a>
+      <a class="btn btn-lg" routerLink="/register">Create an account</a>
     </div>
   </div>
 </section>

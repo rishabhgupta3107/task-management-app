@@ -61,6 +61,12 @@ public class SecurityConfig {
                 authorize
                     .requestMatchers("/api/auth/**")
                     .permitAll()
+                    // White-label dashboards are reached via an unguessable share token.
+                    .requestMatchers("/api/public/**")
+                    .permitAll()
+                    // Metric ingestion is authenticated by a per-client token in the path.
+                    .requestMatchers("/api/ingest/**")
+                    .permitAll()
                     // Health endpoint is public for load balancers; everything else is protected.
                     .requestMatchers(EndpointRequest.to("health"))
                     .permitAll()
@@ -70,7 +76,10 @@ public class SecurityConfig {
                     .authenticated())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .addFilterBefore(new AuthRateLimitFilter(), JwtFilter.class)
+        // Both custom filters must be anchored to a filter Spring Security knows the order of.
+        // A custom class (e.g. JwtFilter) has no registered order and throws at startup.
+        // Insertion order is preserved, so the rate limiter still runs before the JWT filter.
+        .addFilterBefore(new AuthRateLimitFilter(), UsernamePasswordAuthenticationFilter.class)
         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();

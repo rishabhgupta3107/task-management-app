@@ -8,26 +8,17 @@ It's built on a **Spring Boot** backend and an **Angular 17** frontend, with JWT
 
 HELM isn't a passive list — it turns your tasks into an *operating picture* and tells you what to do next. It bridges the gaps common to task apps:
 
-- **Focus view** — an urgency engine scores every task from priority + due date and surfaces
-  Overdue / Due today / At-risk / Upcoming, with a "do this next" hero. (Fixes "apps are just lists.")
-- **Kanban board** — drag tasks across To do / In progress / Done; status persists on drop. Toggle
-  to a dense sortable list view.
-- **Analytics** — throughput (created vs. completed over 14 days), status mix, priority breakdown,
-  completion rate and overdue KPIs, rendered with Chart.js in both themes.
+- **Focus view** — an urgency engine scores every task from priority + due date and surfaces Overdue / Due today / At-risk / Upcoming, with a "do this next" hero. (Fixes "apps are just lists.")
+- **Kanban board** — drag tasks across To do / In progress / Done; status persists on drop. Toggle to a dense sortable list view.
+- **Analytics** — throughput (created vs. completed over 14 days), status mix, priority breakdown, completion rate and overdue KPIs, rendered with Chart.js in both themes.
 - **Rich tasks** — subtasks with a progress bar, tags, and a created/updated activity timeline.
-- **Full profiles** — name, email, date of birth → auto-calculated age, title, bio, timezone, and a
-  generated gradient avatar (or your own image URL). Registration collects the essentials.
-- **Roles & teams (RBAC)** — a 3-tier hierarchy (Manager › Team Lead › Worker). Managers and leads
-  see everyone below them, can add members and change designations from a **Team** page, and can
-  **create & assign** tasks down to their reports. Tasks have a creator and an assignee; your board
-  shows what's assigned to you. At registration you can pick who you report to.
+- **Full profiles** — name, email, date of birth → auto-calculated age, title, bio, timezone, and a generated gradient avatar (or your own image URL). Registration collects the essentials.
+- **Roles & teams (RBAC)** — a 3-tier hierarchy (Manager › Team Lead › Worker). Managers and leads see everyone below them, can add members and change designations from a **Team** page, and can **create & assign** tasks down to their reports. Tasks have a creator and an assignee; your board shows what's assigned to you. At registration you can pick who you report to.
 
 ### Experience
 
-- **Scroll-driven landing page** (`/welcome`) — GSAP + Lenis showpiece with an orbiting ring of task
-  cards that rotates as you scroll. Tagline: *"Stop tracking tasks. Start commanding them."*
-- **Dark "terminal" + light themes** with an animated toggle (persisted per user), carried
-  consistently across the whole authenticated app (sidebar shell, board, focus, analytics, profile).
+- **Scroll-driven landing page** (`/welcome`) — GSAP + Lenis showpiece with an orbiting ring of task cards that rotates as you scroll. Tagline: *"Stop tracking tasks. Start commanding them."*
+- **Dark "terminal" + light themes** with an animated toggle (persisted per user), carried consistently across the whole authenticated app (sidebar shell, board, focus, analytics, profile).
 - **⌘K command palette** — jump to any view, create a task, toggle theme, or sign out from anywhere.
 - Polished micro-interactions and route transitions; respects `prefers-reduced-motion`.
 
@@ -35,11 +26,8 @@ Tech: Angular 17, Angular Material (themed), Angular CDK drag-drop, GSAP + Scrol
 
 ## Architecture
 
-- **Backend** (`backend-springboot`): layered REST API — Controller → Service → Repository →
-  Entity — with a dedicated DTO layer (entities are never exposed on the wire), a global
-  exception handler, stateful-free JWT security, and Flyway-managed PostgreSQL schema.
-- **Frontend** (`frontend`): Angular 17 (NgModule) app with a typed service layer, an HTTP
-  interceptor for auth, a route guard, and reactive forms throughout.
+- **Backend** (`backend-springboot`): layered REST API — Controller → Service → Repository → Entity — with a dedicated DTO layer (entities are never exposed on the wire), a global exception handler, stateful-free JWT security, and Flyway-managed PostgreSQL schema.
+- **Frontend** (`frontend`): Angular 17 (NgModule) app with a typed service layer, an HTTP interceptor for auth, a route guard, and reactive forms throughout.
 
 ## Run with Docker (recommended)
 
@@ -55,8 +43,7 @@ docker compose up --build
 Then open **http://localhost:8081** and sign in with `rishabh` / `password`.
 
 - The frontend (nginx) is published on port **8081** and proxies `/api/*` to the backend.
-- The backend and Postgres run on the internal Docker network; Postgres data persists in the
-  `pgdata` volume.
+- The backend and Postgres run on the internal Docker network; Postgres data persists in the `pgdata` volume.
 - Flyway creates the schema and seeds data automatically on first start.
 
 To stop and remove everything (including the database volume):
@@ -64,6 +51,26 @@ To stop and remove everything (including the database volume):
 ```sh
 docker compose down -v
 ```
+
+## Updating in Docker (after code changes)
+
+Docker images are **snapshots** — editing files on your machine does nothing until you rebuild. To pull in new code:
+
+```sh
+# Rebuild only what changed (fast), then restart just that service:
+docker compose build backend && docker compose up -d backend      # backend changes
+docker compose build frontend && docker compose up -d frontend    # frontend changes
+
+# Or rebuild everything:
+docker compose up -d --build
+```
+
+Then **hard-refresh** the browser (Cmd/Ctrl+Shift+R) so cached assets reload.
+
+- **Database migrations apply automatically** on backend startup (Flyway runs any new `V*.sql`). You do **not** need to reset the volume for schema changes.
+- Only use `docker compose down -v` if you want a **clean database** (it wipes the `pgdata` volume and re-seeds from scratch). It's destructive.
+- If a build seems to reuse stale layers, force a clean rebuild: `docker compose build --no-cache <service>`.
+- Note: the backend image compiles the Java itself (JDK 21 in the build stage), so a backend compile error surfaces during `docker compose build backend` — that's the real compiler for this project.
 
 ---
 
@@ -121,8 +128,7 @@ npm start
 Open `http://localhost:4200`.
 
 - Dev builds call the API at `http://localhost:8080` (`src/environments/environment.ts`).
-- Production builds expect the API on the same origin under `/api/...`
-  (`src/environments/environment.prod.ts`) — put a reverse proxy in front, or edit `apiUrl`.
+- Production builds expect the API on the same origin under `/api/...` (`src/environments/environment.prod.ts`) — put a reverse proxy in front, or edit `apiUrl`.
 
 ## 4. Credentials
 
@@ -159,19 +165,10 @@ All `/api/tasks/**` endpoints require a `Bearer` token and are scoped to the aut
 ## Notes
 
 - Passwords are hashed with BCrypt.
-- The schema is owned by Flyway; Hibernate is set to `validate` so entities and schema can't
-  silently drift.
-- Frontend unit test specs (`*.spec.ts`) are scaffolding and may need module imports updated
-  before `npm test` passes; they are excluded from production builds.
-- **Security:** the JWT lives in `localStorage`, backed by a strict Content-Security-Policy served
-  from nginx and Angular's default output encoding. Rationale and the switch-to-cookie criteria are
-  in [`docs/adr/0001-jwt-storage.md`](docs/adr/0001-jwt-storage.md). Production error responses are
-  trimmed (`server.error.include-message=never`); set `ERROR_INCLUDE_MESSAGE=always` locally to debug.
-- **SEO:** `/welcome` ships Open Graph / Twitter / canonical / JSON-LD metadata in `index.html`.
-  Replace the `https://helm.example.com` placeholder URLs with your real origin, and swap
-  `assets/og-image.svg` for a 1200×630 **PNG** (many social scrapers don't render SVG). Google
-  executes JS so the SPA is indexable as-is; for best LCP and non-JS scrapers, consider
-  **prerendering** `/welcome` (Angular SSG) as a follow-up.
+- The schema is owned by Flyway; Hibernate is set to `validate` so entities and schema can't silently drift.
+- Frontend unit test specs (`*.spec.ts`) are scaffolding and may need module imports updated before `npm test` passes; they are excluded from production builds.
+- **Security:** the JWT lives in `localStorage`, backed by a strict Content-Security-Policy served from nginx and Angular's default output encoding. Rationale and the switch-to-cookie criteria are in [`docs/adr/0001-jwt-storage.md`](docs/adr/0001-jwt-storage.md). Production error responses are trimmed (`server.error.include-message=never`); set `ERROR_INCLUDE_MESSAGE=always` locally to debug.
+- **SEO:** `/welcome` ships Open Graph / Twitter / canonical / JSON-LD metadata in `index.html`. Replace the `https://helm.example.com` placeholder URLs with your real origin, and swap `assets/og-image.svg` for a 1200×630 **PNG** (many social scrapers don't render SVG). Google executes JS so the SPA is indexable as-is; for best LCP and non-JS scrapers, consider **prerendering** `/welcome` (Angular SSG) as a follow-up.
 
 ## Contact
 

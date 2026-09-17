@@ -1,0 +1,31 @@
+:host { display: block; min-height: 100vh; background: var(--bg); }
+.public { max-width: 1180px; margin: 0 auto; padding: 28px 24px 60px; animation: fade-up var(--dur-3) var(--ease) both; }
+
+.p-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding-bottom: 20px; margin-bottom: 24px; border-bottom: 1px solid var(--border);
+}
+.p-brand { display: flex; align-items: center; gap: 14px; }
+.p-logo { height: 44px; width: auto; border-radius: 8px; }
+.p-mark { width: 48px; height: 48px; border-radius: 12px; color: #fff; font-weight: 800; font-size: 20px; display: inline-flex; align-items: center; justify-content: center; }
+.p-head h1 { font-size: 24px; letter-spacing: -0.02em; color: var(--text); }
+.p-client { color: var(--text-muted); margin: 3px 0 0; font-size: 14px; }
+.p-head-right { display: inline-flex; align-items: center; gap: 12px; }
+.p-head-right .btn mat-icon { font-size: 17px; width: 17px; height: 17px; }
+.p-live { display: inline-flex; align-items: center; gap: 7px; font-size: 11px; color: var(--status-done); }
+.p-live .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--status-done); box-shadow: 0 0 8px var(--status-done); }
+
+.p-widgets { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; grid-auto-rows: minmax(120px, auto); }
+.w-slot { min-width: 0; }
+.span-1 { grid-column: span 1; }
+.span-2 { grid-column: span 2; }
+.tall { grid-row: span 2; }
+
+.p-foot { margin-top: 30px; text-align: center; color: var(--text-faint); font-size: 12px; }
+.p-foot .brand { color: var(--text-muted); font-weight: 700; letter-spacing: 0.1em; }
+
+.p-msg { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 100px 20px; color: var(--text-muted); }
+.p-msg mat-icon { font-size: 40px; width: 40px; height: 40px; color: var(--text-faint); }
+
+@media (max-width: 900px) { .p-widgets { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .p-widgets { grid-template-columns: 1fr; } .span-2, .span-1 { grid-column: span 1; } }

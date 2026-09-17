@@ -1,13 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  NgZone,
-  OnDestroy,
-  QueryList,
-  ViewChild,
-  ViewChildren,
-} from '@angular/core';
+import { AfterViewInit, Component, ElementRef, NgZone, OnDestroy, ViewChild } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -15,11 +6,23 @@ import Lenis from 'lenis';
 
 gsap.registerPlugin(ScrollTrigger);
 
-interface OrbitCard {
-  title: string;
-  status: 'TO_DO' | 'IN_PROGRESS' | 'DONE';
-  priority: 'LOW' | 'MEDIUM' | 'HIGH';
-  meta: string;
+/** Motion constants. Every animation on this page reads from here so timing stays coherent. */
+const MOTION = {
+  ease: 'power3.out',
+  easeExpo: 'expo.out',
+  fast: 0.45,
+  base: 0.7,
+  slow: 1.1,
+  stagger: 0.08,
+};
+
+interface Kpi {
+  label: string;
+  value: number;
+  prefix: string;
+  suffix: string;
+  delta: string;
+  up: boolean;
 }
 
 @Component({
@@ -28,140 +31,214 @@ interface OrbitCard {
   styleUrls: ['./welcome.component.css'],
 })
 export class WelcomeComponent implements AfterViewInit, OnDestroy {
-  @ViewChild('ring') ring!: ElementRef<HTMLDivElement>;
-  @ViewChildren('orbitCard') orbitCards!: QueryList<ElementRef<HTMLDivElement>>;
-  @ViewChildren('reveal') reveals!: QueryList<ElementRef<HTMLElement>>;
+  @ViewChild('hero') hero!: ElementRef<HTMLElement>;
+  @ViewChild('reportCard') reportCard!: ElementRef<HTMLElement>;
+  @ViewChild('spark') spark!: ElementRef<SVGPathElement>;
 
-  private lenis?: Lenis;
-  private rafId?: number;
-  private triggers: ScrollTrigger[] = [];
+  /** The numbers on the hero report card. Animated by a count-up on load. */
+  readonly kpis: Kpi[] = [
+    { label: 'Sessions', value: 12480, prefix: '', suffix: '', delta: '18%', up: true },
+    { label: 'Conversions', value: 412, prefix: '', suffix: '', delta: '9%', up: true },
+    { label: 'Ad spend', value: 7240, prefix: '$', suffix: '', delta: '4%', up: false },
+    { label: 'ROAS', value: 4.2, prefix: '', suffix: '×', delta: '22%', up: true },
+  ];
 
-  readonly orbit: OrbitCard[] = [
-    { title: 'Ship v2 API gateway', status: 'IN_PROGRESS', priority: 'HIGH', meta: 'due 2d' },
-    { title: 'Rotate prod credentials', status: 'TO_DO', priority: 'HIGH', meta: 'due today' },
-    { title: 'Draft incident postmortem', status: 'TO_DO', priority: 'MEDIUM', meta: 'due 4d' },
-    { title: 'Migrate to Postgres 16', status: 'DONE', priority: 'MEDIUM', meta: 'closed' },
-    { title: 'Review Q3 roadmap', status: 'IN_PROGRESS', priority: 'LOW', meta: 'due 1w' },
-    { title: 'Onboard new operator', status: 'TO_DO', priority: 'LOW', meta: 'due 3d' },
-    { title: 'Patch CVE-2026-1180', status: 'IN_PROGRESS', priority: 'HIGH', meta: 'due 6h' },
-    { title: 'Archive stale tasks', status: 'DONE', priority: 'LOW', meta: 'closed' },
-    { title: 'Tune alert thresholds', status: 'TO_DO', priority: 'MEDIUM', meta: 'due 5d' },
-    { title: 'Publish status page', status: 'IN_PROGRESS', priority: 'MEDIUM', meta: 'due 2d' },
+  readonly steps = [
+    {
+      n: '01',
+      title: 'Connect the numbers once',
+      body: 'Push metrics by CSV, by hand, or straight from your stack with a per-client API token. No brittle integrations to babysit.',
+    },
+    {
+      n: '02',
+      title: 'The dashboard builds itself',
+      body: 'Pick a template — Paid Ads, SEO, Social, Email — and every KPI, trend and channel split renders against live data.',
+    },
+    {
+      n: '03',
+      title: 'Send one link, forever',
+      body: 'Your client gets a white-label page that is always current. The month-end report becomes a link you already sent.',
+    },
   ];
 
   readonly features = [
     {
+      icon: 'dashboard_customize',
+      title: 'White-label by default',
+      body: 'Your client’s brand and colour on a page with no login wall — not a $145/month upgrade.',
+    },
+    {
       icon: 'bolt',
-      title: 'Keyboard-first',
-      body: 'Hit ⌘K to command anything — create, jump, filter, or triage without lifting your hands off the keyboard.',
+      title: 'Work beside results',
+      body: 'Tasks, owners and deadlines live next to the numbers they move. Reporting tools forgot this half.',
     },
     {
-      icon: 'grid_view',
-      title: 'Glanceable density',
-      body: 'A terminal-grade board where status, priority and deadlines read at a glance. No hunting, no bloat.',
+      icon: 'insights',
+      title: 'Answers, not exports',
+      body: 'Throughput, completion rate and overdue risk are computed for you — no pivot tables.',
     },
     {
-      icon: 'speed',
-      title: 'Instant everything',
-      body: 'Optimistic updates and buttery transitions. The interface never makes you wait for your own work.',
-    },
-    {
-      icon: 'shield',
-      title: 'Secure by default',
-      body: 'Per-user isolation, JWT auth, and a hardened backend. Your work stays yours.',
+      icon: 'lock',
+      title: 'Isolated per client',
+      body: 'Every account, dashboard and metric is scoped server-side. One agency, many clients, no leakage.',
     },
   ];
 
+  private lenis?: Lenis;
+  private rafId?: number;
+  private ctx?: gsap.Context;
+  private reduced = false;
+
   constructor(private zone: NgZone, private title: Title, private meta: Meta) {
     const desc =
-      "HELM turns scattered work into a prioritized operating picture — so you always know what's next. A keyboard-first task terminal with the speed of Linear and the density of a trading terminal.";
-    this.title.setTitle('HELM — Stop tracking. Start commanding.');
+      'HELM gives every client a live white-label marketing dashboard — so month-end reporting stops eating 2–10 hours of your week.';
+    this.title.setTitle('HELM — Client reporting that builds itself');
     this.meta.updateTag({ name: 'description', content: desc });
-    this.meta.updateTag({ property: 'og:title', content: 'HELM — Stop tracking. Start commanding.' });
+    this.meta.updateTag({ property: 'og:title', content: 'HELM — Client reporting that builds itself' });
     this.meta.updateTag({ property: 'og:description', content: desc });
   }
 
   ngAfterViewInit(): void {
+    this.reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.zone.runOutsideAngular(() => {
-      this.positionOrbit();
+      if (this.reduced) {
+        this.revealAllStatically();
+        return;
+      }
       this.initSmoothScroll();
-      this.initAnimations();
+      this.ctx = gsap.context(() => {
+        this.heroTimeline();
+        this.scrollReveals();
+        this.cardParallax();
+      });
+      ScrollTrigger.refresh();
     });
   }
 
   ngOnDestroy(): void {
-    this.triggers.forEach((t) => t.kill());
+    this.ctx?.revert();
     ScrollTrigger.getAll().forEach((t) => t.kill());
-    if (this.rafId) {
-      cancelAnimationFrame(this.rafId);
-    }
+    if (this.rafId) cancelAnimationFrame(this.rafId);
     this.lenis?.destroy();
   }
 
-  /** Places each orbit card evenly around a large circle, rotated tangentially (the "curve"). */
-  private positionOrbit(): void {
-    const cards = this.orbitCards.toArray();
-    const count = cards.length;
-    const radius = 620;
-    cards.forEach((cardRef, i) => {
-      const angle = (360 / count) * i;
-      cardRef.nativeElement.style.transform =
-        `translate(-50%, -50%) rotate(${angle}deg) translateY(-${radius}px) rotate(${-angle}deg)`;
+  /** Pointer-tracked tilt gives the report card physical presence without a library. */
+  onCardMove(event: PointerEvent): void {
+    if (this.reduced || !this.reportCard) return;
+    const el = this.reportCard.nativeElement;
+    const r = el.getBoundingClientRect();
+    const px = (event.clientX - r.left) / r.width - 0.5;
+    const py = (event.clientY - r.top) / r.height - 0.5;
+    gsap.to(el, {
+      rotateY: px * 9,
+      rotateX: -py * 9,
+      duration: 0.5,
+      ease: MOTION.ease,
+      transformPerspective: 1000,
     });
   }
 
+  onCardLeave(): void {
+    if (this.reduced || !this.reportCard) return;
+    gsap.to(this.reportCard.nativeElement, { rotateX: 0, rotateY: 0, duration: 0.8, ease: MOTION.easeExpo });
+  }
+
   private initSmoothScroll(): void {
-    // Snappier than the default: higher lerp = closer to native, bigger multipliers = faster travel.
-    this.lenis = new Lenis({ lerp: 0.14, wheelMultiplier: 1.6, touchMultiplier: 2 });
+    this.lenis = new Lenis({ lerp: 0.12, wheelMultiplier: 1.15, touchMultiplier: 1.8 });
     this.lenis.on('scroll', ScrollTrigger.update);
-    const raf = (time: number) => {
-      this.lenis?.raf(time);
+    const raf = (t: number) => {
+      this.lenis?.raf(t);
       this.rafId = requestAnimationFrame(raf);
     };
     this.rafId = requestAnimationFrame(raf);
   }
 
-  private initAnimations(): void {
-    // Scroll-linked rotation of the orbit ring.
-    const rotate = gsap.fromTo(
-      this.ring.nativeElement,
-      { rotate: -28 },
-      {
-        rotate: 28,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: '.hero',
-          start: 'top top',
-          end: 'bottom top',
-          scrub: 1,
+  /** One choreographed entrance: eyebrow → headline lines → copy → actions → card → data. */
+  private heroTimeline(): void {
+    const tl = gsap.timeline({ defaults: { ease: MOTION.ease } });
+
+    tl.from('[data-anim="eyebrow"]', { y: 14, opacity: 0, duration: MOTION.fast })
+      .from('[data-anim="line"] > span', { yPercent: 115, duration: MOTION.slow, stagger: 0.09, ease: MOTION.easeExpo }, '-=0.15')
+      .from('[data-anim="sub"]', { y: 16, opacity: 0, duration: MOTION.base }, '-=0.65')
+      .from('[data-anim="cta"] > *', { y: 14, opacity: 0, duration: MOTION.base, stagger: MOTION.stagger }, '-=0.45')
+      .from('[data-anim="trust"] > *', { y: 10, opacity: 0, duration: MOTION.fast, stagger: 0.06 }, '-=0.4')
+      .from('[data-anim="card"]', { y: 40, opacity: 0, rotateX: 8, duration: MOTION.slow, ease: MOTION.easeExpo }, '-=0.9')
+      .from('[data-anim="kpi"]', { y: 16, opacity: 0, duration: MOTION.base, stagger: MOTION.stagger }, '-=0.55')
+      .add(() => this.countUp(), '-=0.5')
+      .add(() => this.drawSparkline(), '-=0.5');
+  }
+
+  /** KPI numbers tick up to their real value — the page feels alive, not painted. */
+  private countUp(): void {
+    document.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => {
+      const target = parseFloat(el.dataset['count'] || '0');
+      const decimals = target % 1 !== 0 ? 1 : 0;
+      const proxy = { v: 0 };
+      gsap.to(proxy, {
+        v: target,
+        duration: 1.5,
+        ease: MOTION.easeExpo,
+        onUpdate: () => {
+          el.textContent = decimals
+            ? proxy.v.toFixed(1)
+            : Math.round(proxy.v).toLocaleString();
         },
-      }
-    );
-    if (rotate.scrollTrigger) {
-      this.triggers.push(rotate.scrollTrigger);
-    }
-
-    // Parallax drift + fade on the ring as the hero leaves.
-    const drift = gsap.to(this.ring.nativeElement, {
-      yPercent: 12,
-      opacity: 0.35,
-      ease: 'none',
-      scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 1 },
-    });
-    if (drift.scrollTrigger) {
-      this.triggers.push(drift.scrollTrigger);
-    }
-
-    // Staggered reveal for everything marked #reveal.
-    this.reveals.forEach((el) => {
-      const trigger = ScrollTrigger.create({
-        trigger: el.nativeElement,
-        start: 'top 85%',
-        onEnter: () => el.nativeElement.classList.add('in'),
       });
-      this.triggers.push(trigger);
+    });
+  }
+
+  private drawSparkline(): void {
+    const path = this.spark?.nativeElement;
+    if (!path) return;
+    const len = path.getTotalLength();
+    gsap.fromTo(
+      path,
+      { strokeDasharray: len, strokeDashoffset: len },
+      { strokeDashoffset: 0, duration: 1.6, ease: 'power2.inOut' }
+    );
+  }
+
+  private scrollReveals(): void {
+    gsap.utils.toArray<HTMLElement>('[data-reveal]').forEach((el) => {
+      gsap.from(el, {
+        y: 28,
+        opacity: 0,
+        duration: MOTION.base,
+        ease: MOTION.ease,
+        scrollTrigger: { trigger: el, start: 'top 86%' },
+      });
     });
 
-    ScrollTrigger.refresh();
+    gsap.utils.toArray<HTMLElement>('[data-reveal-group]').forEach((group) => {
+      gsap.from(group.children, {
+        y: 26,
+        opacity: 0,
+        duration: MOTION.base,
+        ease: MOTION.ease,
+        stagger: MOTION.stagger,
+        scrollTrigger: { trigger: group, start: 'top 84%' },
+      });
+    });
+  }
+
+  private cardParallax(): void {
+    if (!this.reportCard) return;
+    gsap.to(this.reportCard.nativeElement, {
+      yPercent: -8,
+      ease: 'none',
+      scrollTrigger: { trigger: this.hero.nativeElement, start: 'top top', end: 'bottom top', scrub: 0.6 },
+    });
+  }
+
+  /** Reduced-motion: everything is simply present, no transforms, no smooth scroll. */
+  private revealAllStatically(): void {
+    document.querySelectorAll<HTMLElement>('[data-reveal], [data-reveal-group]').forEach((el) => {
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+    });
+    document.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => {
+      const target = parseFloat(el.dataset['count'] || '0');
+      el.textContent = target % 1 !== 0 ? target.toFixed(1) : Math.round(target).toLocaleString();
+    });
   }
 }

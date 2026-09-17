@@ -60,6 +60,12 @@
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 
+		<!-- Email (scheduled reports; only active when spring.mail.* is configured) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+
 		<!-- JWT (modern 0.12.x API) -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
@@ -131,9 +137,11 @@
 				<version>2.43.0</version>
 				<configuration>
 					<java>
-						<googleJavaFormat>
-							<style>GOOGLE</style>
-						</googleJavaFormat>
+						<!-- google-java-format hard-wraps at 100 cols and the width is not configurable,
+						     which re-wrapped single-line doc comments on every build. Hygiene steps only. -->
+						<removeUnusedImports/>
+						<trimTrailingWhitespace/>
+						<endWithNewline/>
 					</java>
 				</configuration>
 				<executions>

@@ -1,0 +1,83 @@
+<div class="dash" *ngIf="dashboard">
+  <a class="back mono no-print" [routerLink]="['/app/clients', dashboard.clientId]">
+    <mat-icon>arrow_back</mat-icon> {{ dashboard.clientName }}
+  </a>
+
+  <div class="d-head">
+    <div>
+      <span class="eyebrow mono">{{ dashboard.clientName }} · {{ dashboard.template }}</span>
+      <h1>{{ dashboard.name }}</h1>
+    </div>
+    <div class="d-actions no-print">
+      <div class="range">
+        <button *ngFor="let r of ranges" [class.active]="rangeDays === r.days" (click)="setRange(r.days)">
+          {{ r.label }}
+        </button>
+      </div>
+      <button class="btn" (click)="exportPdf()"><mat-icon>picture_as_pdf</mat-icon> PDF</button>
+      <button class="btn" (click)="showSchedule = !showSchedule"><mat-icon>schedule</mat-icon> Schedule</button>
+      <button class="btn" (click)="adding = !adding"><mat-icon>add</mat-icon> Widget</button>
+      <button class="btn btn-ghost icon" (click)="deleteDashboard()" aria-label="Delete dashboard"><mat-icon>delete_outline</mat-icon></button>
+    </div>
+  </div>
+
+  <!-- Schedule report -->
+  <div class="schedule card no-print" *ngIf="showSchedule">
+    <div class="sched-row">
+      <mat-icon>mark_email_read</mat-icon>
+      <select class="in" [(ngModel)]="scheduleFreq" aria-label="Frequency">
+        <option *ngFor="let f of frequencies" [value]="f">{{ f }}</option>
+      </select>
+      <input class="in" type="email" [(ngModel)]="scheduleRecipient" placeholder="client@email.com" aria-label="Recipient">
+      <button class="btn btn-primary" (click)="saveSchedule()">Save</button>
+      <button class="btn" (click)="sendNow()">Send now</button>
+      <span class="sched-msg mono" *ngIf="scheduleMsg">{{ scheduleMsg }}</span>
+    </div>
+    <p class="sched-hint">Scheduled emails require SMTP configured on the server; "Send now" reports the result.</p>
+  </div>
+
+  <!-- Share bar -->
+  <div class="share card no-print">
+    <label class="switch">
+      <input type="checkbox" [checked]="dashboard.shareEnabled" (change)="toggleShare()">
+      <span class="track"><span class="thumb"></span></span>
+      <span class="switch-label">{{ dashboard.shareEnabled ? 'Client link is live' : 'Share with client' }}</span>
+    </label>
+    <div class="share-url" *ngIf="dashboard.shareEnabled && shareUrl">
+      <span class="url mono">{{ shareUrl }}</span>
+      <button class="btn btn-ghost" (click)="copyShare()">{{ copied ? 'Copied!' : 'Copy' }}</button>
+      <a class="btn btn-ghost" [href]="shareUrl" target="_blank" rel="noopener">Open</a>
+    </div>
+  </div>
+
+  <!-- Add widget -->
+  <div class="add-widget card no-print" *ngIf="adding">
+    <select class="in" [(ngModel)]="newWidget.type" aria-label="Widget type">
+      <option *ngFor="let t of widgetTypes" [value]="t">{{ t }}</option>
+    </select>
+    <input class="in" [(ngModel)]="newWidget.title" placeholder="Widget title" aria-label="Widget title">
+    <select class="in" [(ngModel)]="newWidget.metricKey" aria-label="Metric">
+      <option *ngFor="let k of metricKeys" [value]="k">{{ k }}</option>
+    </select>
+    <select class="in" [(ngModel)]="newWidget.aggregation" aria-label="Aggregation">
+      <option value="SUM">Sum</option>
+      <option value="AVG">Average</option>
+      <option value="LAST">Latest</option>
+    </select>
+    <button class="btn btn-primary" (click)="addWidget()">Add</button>
+  </div>
+
+  <!-- Widgets -->
+  <div class="widgets" *ngIf="!loading">
+    <div class="w-slot" *ngFor="let w of dashboard.widgets" [ngClass]="widgetClass(w)">
+      <app-widget-card [widget]="w" [points]="points" [accent]="dashboard.brandColor || ''"
+                       (remove)="removeWidget(w)"></app-widget-card>
+    </div>
+    <div class="w-empty" *ngIf="dashboard.widgets.length === 0">
+      <mat-icon>bar_chart</mat-icon>
+      <p>No widgets yet. Add one, or add data on the client's Data tab.</p>
+    </div>
+  </div>
+
+  <div class="loading mono" *ngIf="loading">Loading dashboard…</div>
+</div>

@@ -6,18 +6,13 @@
 
 HELM authenticates with a stateless JWT (HS256, 1-hour access token). The token must live somewhere in the browser. The two realistic options:
 
-1. **`localStorage` + strict XSS hygiene** — the SPA reads the token and attaches it as an
-   `Authorization: Bearer` header. Simple; the token is readable by any JavaScript, so its
-   security rests entirely on there being no XSS.
-2. **`httpOnly` cookie + CSRF token** — the server sets the token in an `httpOnly` cookie the
-   JS cannot read; a separate CSRF token defends state-changing requests. Stronger against XSS
-   token theft, but reintroduces CSRF handling and changes the whole auth flow.
+1. **`localStorage` + strict XSS hygiene** — the SPA reads the token and attaches it as an `Authorization: Bearer` header. Simple; the token is readable by any JavaScript, so its security rests entirely on there being no XSS.
+2. **`httpOnly` cookie + CSRF token** — the server sets the token in an `httpOnly` cookie the JS cannot read; a separate CSRF token defends state-changing requests. Stronger against XSS token theft, but reintroduces CSRF handling and changes the whole auth flow.
 
 ## Threat-model assessment (as of this decision)
 
 - The frontend is **Angular 17 with AOT**, which contextually auto-escapes all interpolation.
-- A code audit found **no `innerHTML`/`[innerHTML]`, no `bypassSecurityTrust*`, no `eval`, and no
-  `document.write`** — i.e. no HTML-injection sinks. The XSS attack surface is minimal.
+- A code audit found **no `innerHTML`/`[innerHTML]`, no `bypassSecurityTrust*`, no `eval`, and no `document.write`** — i.e. no HTML-injection sinks. The XSS attack surface is minimal.
 - No third-party/embedded scripts run in the app origin. No user-generated HTML is rendered.
 - Data sensitivity is moderate (task/productivity data), not financial or regulated PII.
 
@@ -25,12 +20,9 @@ HELM authenticates with a stateless JWT (HS256, 1-hour access token). The token 
 
 **Keep the token in `localStorage`, and harden the origin against XSS** rather than moving to `httpOnly` cookies at this time. Concretely:
 
-- A strict **Content-Security-Policy** is served by nginx (`script-src 'self'`), so even if an
-  injection sink were introduced later, injected inline/remote scripts would not execute.
-- Additional headers: `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`,
-  `Referrer-Policy`, `Permissions-Policy`.
-- Angular's default output encoding is relied upon and must **not** be bypassed
-  (`bypassSecurityTrustHtml` etc. are prohibited without a security review).
+- A strict **Content-Security-Policy** is served by nginx (`script-src 'self'`), so even if an injection sink were introduced later, injected inline/remote scripts would not execute.
+- Additional headers: `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy`, `Permissions-Policy`.
+- Angular's default output encoding is relied upon and must **not** be bypassed (`bypassSecurityTrustHtml` etc. are prohibited without a security review).
 - The token interceptor already logs the user out on `401`, limiting the window of a stale token.
 
 This keeps the implementation simple and avoids the CSRF complexity, while the CSP provides defense-in-depth that substantially closes the localStorage-token risk.
@@ -48,5 +40,4 @@ At that point: set the JWT as an `httpOnly; Secure; SameSite=Strict` cookie on l
 ## Consequences
 
 - **Pro:** minimal code, no CSRF surface, strong XSS mitigation via CSP.
-- **Con:** the token is still technically readable by JS, so discipline around the "no HTML sinks /
-  no `bypassSecurityTrust`" rule is a standing requirement (worth a lint rule / PR checklist item).
+- **Con:** the token is still technically readable by JS, so discipline around the "no HTML sinks / no `bypassSecurityTrust`" rule is a standing requirement (worth a lint rule / PR checklist item).

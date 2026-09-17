@@ -36,6 +36,11 @@ import { FocusComponent } from './focus/focus.component';
 import { AnalyticsComponent } from './analytics/analytics.component';
 import { ProfileComponent } from './profile/profile.component';
 import { TeamComponent } from './team/team.component';
+import { ClientsComponent } from './clients/clients.component';
+import { ClientDetailComponent } from './clients/client-detail.component';
+import { DashboardViewComponent } from './dashboards/dashboard-view.component';
+import { PublicDashboardComponent } from './public/public-dashboard.component';
+import { WidgetCardComponent } from './shared/widget-card.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import { TitleStrategy } from '@angular/router';
@@ -61,6 +66,11 @@ import { TemplatePageTitleStrategy } from './services/title-strategy.service';
     AnalyticsComponent,
     ProfileComponent,
     TeamComponent,
+    ClientsComponent,
+    ClientDetailComponent,
+    DashboardViewComponent,
+    PublicDashboardComponent,
+    WidgetCardComponent,
     NotFoundComponent,
   ],
   imports: [

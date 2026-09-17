@@ -1,0 +1,81 @@
+<div class="detail" *ngIf="client">
+  <a class="back mono" routerLink="/app/clients"><mat-icon>arrow_back</mat-icon> Clients</a>
+
+  <div class="c-head">
+    <span class="c-avatar" [style.background]="client.brandColor || 'var(--accent)'">
+      {{ client.name.charAt(0).toUpperCase() }}
+    </span>
+    <div>
+      <h1>{{ client.name }}</h1>
+      <p class="c-industry">{{ client.industry || '—' }}</p>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button [class.active]="tab === 'dashboards'" (click)="tab = 'dashboards'">Dashboards</button>
+    <button [class.active]="tab === 'data'" (click)="tab = 'data'">Data</button>
+  </div>
+
+  <!-- Dashboards tab -->
+  <section *ngIf="tab === 'dashboards'">
+    <div class="new-dash card">
+      <input class="in" [(ngModel)]="newDash.name" placeholder="New dashboard name…" aria-label="Dashboard name">
+      <select class="in" [(ngModel)]="newDash.template" aria-label="Template">
+        <option *ngFor="let t of templates" [value]="t.key">{{ t.label }}</option>
+      </select>
+      <button class="btn btn-primary" (click)="createDashboard()">Create dashboard</button>
+    </div>
+
+    <div class="dash-grid" *ngIf="!loading">
+      <article class="dash-card card" *ngFor="let d of dashboards" (click)="openDashboard(d)">
+        <div class="dc-top">
+          <span class="dc-name">{{ d.name }}</span>
+          <span class="chip" *ngIf="d.shareEnabled"><span class="dot" style="background: var(--status-done)"></span>Live</span>
+        </div>
+        <span class="dc-tpl mono">{{ d.template }}</span>
+        <span class="dc-widgets mono">{{ d.widgetCount }} widgets</span>
+      </article>
+      <div class="empty" *ngIf="dashboards.length === 0">
+        <mat-icon>insert_chart</mat-icon>
+        <p>No dashboards yet. Create one from a template above.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Data tab -->
+  <section *ngIf="tab === 'data'" class="data">
+    <div class="card data-card">
+      <h3>Add a data point</h3>
+      <div class="entry-row">
+        <select class="in" [(ngModel)]="entry.metricKey" aria-label="Metric">
+          <option *ngFor="let k of metricKeys" [value]="k">{{ k }}</option>
+        </select>
+        <input class="in" [(ngModel)]="entry.channel" placeholder="channel (optional)" aria-label="Channel">
+        <input class="in" type="date" [(ngModel)]="entry.date" aria-label="Date">
+        <input class="in" type="number" [(ngModel)]="entry.value" placeholder="value" aria-label="Value">
+        <button class="btn btn-primary" (click)="addPoint()">Add</button>
+      </div>
+    </div>
+
+    <div class="card data-card">
+      <h3>Import CSV</h3>
+      <p class="hint">Columns: <span class="mono">date, metricKey, channel, value</span> (channel optional).</p>
+      <label class="upload">
+        <mat-icon>upload_file</mat-icon> Choose CSV
+        <input type="file" accept=".csv,text/csv" (change)="onCsv($event)" hidden>
+      </label>
+    </div>
+
+    <div class="card data-card">
+      <h3>Push API</h3>
+      <p class="hint">Send metrics programmatically — the per-client ingest token is the credential (no login needed):</p>
+      <div class="token-row">
+        <span class="token mono">{{ client.ingestToken || '—' }}</span>
+        <button class="btn btn-ghost" (click)="rotateToken()">Rotate</button>
+      </div>
+      <pre class="code mono">{{ apiExample }}</pre>
+    </div>
+
+    <p class="ingest-msg mono" *ngIf="ingestMsg">{{ ingestMsg }}</p>
+  </section>
+</div>

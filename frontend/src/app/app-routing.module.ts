@@ -12,6 +12,10 @@ import { FocusComponent } from './focus/focus.component';
 import { AnalyticsComponent } from './analytics/analytics.component';
 import { ProfileComponent } from './profile/profile.component';
 import { TeamComponent } from './team/team.component';
+import { ClientsComponent } from './clients/clients.component';
+import { ClientDetailComponent } from './clients/client-detail.component';
+import { DashboardViewComponent } from './dashboards/dashboard-view.component';
+import { PublicDashboardComponent } from './public/public-dashboard.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 
 const routes: Routes = [
@@ -48,11 +52,16 @@ const routes: Routes = [
       { path: 'focus', component: FocusComponent, title: 'Focus' },
       { path: 'board', component: TaskListComponent, title: 'Board' },
       { path: 'analytics', component: AnalyticsComponent, title: 'Analytics' },
+      { path: 'clients', component: ClientsComponent, title: 'Clients' },
+      { path: 'clients/:id', component: ClientDetailComponent, title: 'Client' },
+      { path: 'dashboards/:id', component: DashboardViewComponent, title: 'Dashboard' },
       { path: 'team', component: TeamComponent, title: 'Team' },
       { path: 'profile', component: ProfileComponent, title: 'Profile' },
       { path: 'tasks/:id', component: TaskDetailComponent, title: 'Task' },
     ],
   },
+  // Public white-label client view (no auth, no shell).
+  { path: 'share/:token', component: PublicDashboardComponent, title: 'Dashboard' },
   // Legacy deep links → new nested routes.
   { path: 'tasks', redirectTo: '/app/board', pathMatch: 'full' },
   { path: 'tasks/:id', redirectTo: '/app/tasks/:id' },

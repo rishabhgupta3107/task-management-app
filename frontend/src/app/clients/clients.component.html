@@ -1,0 +1,50 @@
+<div class="clients">
+  <div class="head">
+    <div>
+      <span class="eyebrow mono">CLIENTS</span>
+      <h1>Client accounts</h1>
+    </div>
+    <button class="btn btn-primary" (click)="adding = !adding">
+      <mat-icon>add</mat-icon> New client
+    </button>
+  </div>
+
+  <!-- Add client -->
+  <div class="add card" *ngIf="adding">
+    <div class="add-row">
+      <input class="in" type="text" [(ngModel)]="form.name" placeholder="Client name" aria-label="Client name">
+      <input class="in" type="text" [(ngModel)]="form.industry" placeholder="Industry (optional)" aria-label="Industry">
+      <label class="color">
+        <span class="mono">Brand</span>
+        <input type="color" [(ngModel)]="form.brandColor" aria-label="Brand color">
+      </label>
+      <button class="btn btn-primary" (click)="createClient()">Create</button>
+      <button class="btn btn-ghost" (click)="adding = false">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Grid -->
+  <div class="grid" *ngIf="!loading">
+    <article class="client-card card" *ngFor="let c of clients" (click)="open(c)">
+      <div class="cc-top">
+        <span class="cc-avatar" [style.background]="c.brandColor || 'var(--accent)'">{{ initials(c.name) }}</span>
+        <button class="cc-del" (click)="deleteClient(c, $event)" aria-label="Delete client">
+          <mat-icon>delete_outline</mat-icon>
+        </button>
+      </div>
+      <h3 class="cc-name">{{ c.name }}</h3>
+      <p class="cc-industry">{{ c.industry || '—' }}</p>
+      <div class="cc-foot mono">
+        <mat-icon>dashboard</mat-icon> {{ c.dashboardCount || 0 }} dashboard{{ c.dashboardCount === 1 ? '' : 's' }}
+      </div>
+    </article>
+
+    <div class="empty" *ngIf="clients.length === 0">
+      <mat-icon>apartment</mat-icon>
+      <p>No clients yet. Add your first client to start building dashboards.</p>
+      <button class="btn btn-primary" (click)="adding = true">Add a client</button>
+    </div>
+  </div>
+
+  <div class="loading mono" *ngIf="loading">Loading clients…</div>
+</div>

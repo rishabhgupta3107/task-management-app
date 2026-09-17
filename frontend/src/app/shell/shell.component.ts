@@ -15,6 +15,7 @@ export class ShellComponent implements OnInit {
   navOpen = signal(false);
 
   readonly nav = [
+    { path: '/app/clients', icon: 'apartment', label: 'Clients' },
     { path: '/app/focus', icon: 'bolt', label: 'Focus' },
     { path: '/app/board', icon: 'grid_view', label: 'Board' },
     { path: '/app/analytics', icon: 'insights', label: 'Analytics' },

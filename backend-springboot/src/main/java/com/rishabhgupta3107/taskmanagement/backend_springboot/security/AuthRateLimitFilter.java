@@ -9,10 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
- * Per-IP brute-force limiter for the auth endpoints (login/register). A fixed
- * window of {@code MAX_REQUESTS} per {@code WINDOW_MS}; over the limit returns
- * 429. Pure in-memory / zero external dependencies — good for a single
- * instance. For a multi-instance deploy, back this with Redis or bucket4j.
+ * Per-IP brute-force limiter for the auth endpoints (login/register). A fixed window of {@code MAX_REQUESTS} per {@code WINDOW_MS}; over the limit returns
+ * 429. Pure in-memory / zero external dependencies — good for a single instance. For a multi-instance deploy, back this with Redis or bucket4j.
  */
 public class AuthRateLimitFilter extends OncePerRequestFilter {
 

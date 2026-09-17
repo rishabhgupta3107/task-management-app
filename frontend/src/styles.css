@@ -263,6 +263,53 @@ a {
 /* ============================================================
    Angular Material overrides — map component surfaces to tokens
    ============================================================ */
+
+/*
+ * Material ships a fixed LIGHT palette (prebuilt theme). These tokens re-point its component colors at our CSS variables, so every Material surface follows data-theme automatically instead of being patched case-by-case.
+ */
+:root {
+  /* Dialogs */
+  --mdc-dialog-container-color: var(--bg-elev);
+  --mdc-dialog-subhead-color: var(--text);
+  --mdc-dialog-supporting-text-color: var(--text-muted);
+
+  /* Menus */
+  --mat-menu-container-color: var(--bg-elev);
+  --mat-menu-item-label-text-color: var(--text);
+  --mat-menu-item-icon-color: var(--text-muted);
+
+  /* Select + options */
+  --mat-select-panel-background-color: var(--bg-elev);
+  --mat-select-enabled-trigger-text-color: var(--text);
+  --mat-select-placeholder-text-color: var(--text-faint);
+  --mat-select-enabled-arrow-color: var(--text-muted);
+  --mat-option-label-text-color: var(--text);
+  --mat-option-selected-state-label-text-color: var(--accent);
+  --mat-option-hover-state-layer-color: var(--bg-hover);
+  --mat-option-focus-state-layer-color: var(--bg-hover);
+  --mat-option-selected-state-layer-color: var(--bg-hover);
+
+  /* Form fields (outlined + filled) */
+  --mdc-outlined-text-field-outline-color: var(--border-strong);
+  --mdc-outlined-text-field-hover-outline-color: var(--text-faint);
+  --mdc-outlined-text-field-focus-outline-color: var(--accent);
+  --mdc-outlined-text-field-input-text-color: var(--text);
+  --mdc-outlined-text-field-label-text-color: var(--text-muted);
+  --mdc-outlined-text-field-caret-color: var(--accent);
+  --mdc-filled-text-field-container-color: var(--bg-elev-2);
+  --mdc-filled-text-field-input-text-color: var(--text);
+  --mdc-filled-text-field-label-text-color: var(--text-muted);
+  --mat-form-field-container-text-color: var(--text);
+
+  /* Cards, tables, paginator, icons */
+  --mdc-elevated-card-container-color: var(--bg-elev);
+  --mat-table-background-color: var(--bg-elev);
+  --mat-table-row-item-label-text-color: var(--text);
+  --mat-table-header-headline-color: var(--text-muted);
+  --mat-paginator-container-background-color: transparent;
+  --mat-paginator-container-text-color: var(--text-muted);
+  --mat-icon-color: var(--text-muted);
+}
 .mat-mdc-dialog-container {
   --mdc-dialog-container-color: var(--bg-elev);
   --mdc-dialog-subhead-color: var(--text);
@@ -378,4 +425,30 @@ a {
   background: var(--bg-elev-2) !important;
   color: var(--text) !important;
   border: 1px solid var(--border);
+}
+
+/* ============================================================
+   Print (PDF report export) — force a light palette, drop chrome
+   ============================================================ */
+@media print {
+  :root {
+    --bg: #ffffff;
+    --bg-elev: #ffffff;
+    --bg-elev-2: #f4f5f7;
+    --bg-hover: #eef0f4;
+    --border: #e2e4ea;
+    --border-strong: #d0d3db;
+    --text: #0d0f14;
+    --text-muted: #5b616e;
+    --text-faint: #9aa0ad;
+    --grid-line: rgba(10, 15, 25, 0.06);
+    --shadow: none;
+  }
+  body { background: #fff !important; }
+  /* Hide app chrome and any control marked no-print */
+  .sidebar, .topbar, .scrim, app-command-palette, .no-print { display: none !important; }
+  .shell { grid-template-columns: 1fr !important; }
+  .content { padding: 8px !important; max-width: none !important; margin: 0 !important; }
+  .card, .widget { box-shadow: none !important; break-inside: avoid; }
+  .widgets, .p-widgets { gap: 10px !important; }
 }

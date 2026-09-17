@@ -52,6 +52,15 @@ export class CommandPaletteComponent {
       when: () => this.auth.isLoggedIn(),
     },
     {
+      id: 'clients',
+      label: 'Go to Clients',
+      hint: 'G C',
+      icon: 'apartment',
+      keywords: 'clients dashboards agency reporting accounts',
+      run: () => this.go(['/app/clients']),
+      when: () => this.auth.isLoggedIn(),
+    },
+    {
       id: 'analytics',
       label: 'Go to Analytics',
       hint: 'G A',
